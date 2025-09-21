@@ -21,7 +21,7 @@ impl DailyCommand {
     pub fn execute(&self) -> Result<()> {
         if !self.new && !self.diary && !self.metrics {
             let daily_dir = get_daily_base_dir()?;
-            std::process::Command::new("zed").arg(&daily_dir).spawn()?;
+            std::process::Command::new("code").arg(&daily_dir).spawn()?;
             return Ok(());
         }
 
