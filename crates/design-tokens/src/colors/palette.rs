@@ -1,4 +1,4 @@
-use crate::color::Color;
+use crate::colors::Color;
 
 pub const SLATE_50: Color = Color::new(248, 250, 252);
 pub const SLATE_100: Color = Color::new(241, 245, 249);

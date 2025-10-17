@@ -1,9 +1,8 @@
-mod color;
-mod palette;
-
-pub use palette::*;
+pub mod colors;
+use colors::Color;
 
 pub fn add(left: u64, right: u64) -> u64 {
+    let a: Color = Color::new(0, 0, 0);
     left + right
 }
 
