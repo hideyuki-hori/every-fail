@@ -1,4 +1,4 @@
-use crate::fonts::Px;
+use crate::units::Px;
 
 pub const XS: Px = Px::new(12.0);
 pub const SM: Px = Px::new(14.0);
