@@ -1,265 +1,364 @@
 use crate::colors::Color;
+use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
-pub const SLATE_50: Color = Color::new(248, 250, 252);
-pub const SLATE_100: Color = Color::new(241, 245, 249);
-pub const SLATE_200: Color = Color::new(226, 232, 240);
-pub const SLATE_300: Color = Color::new(203, 213, 225);
-pub const SLATE_400: Color = Color::new(148, 163, 184);
-pub const SLATE_500: Color = Color::new(100, 116, 139);
-pub const SLATE_600: Color = Color::new(71, 85, 105);
-pub const SLATE_700: Color = Color::new(51, 65, 85);
-pub const SLATE_800: Color = Color::new(30, 41, 59);
-pub const SLATE_900: Color = Color::new(15, 23, 42);
-pub const SLATE_950: Color = Color::new(2, 6, 23);
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Palette {
+    pub slate: HashMap<String, Color>,
+    pub gray: HashMap<String, Color>,
+    pub zinc: HashMap<String, Color>,
+    pub neutral: HashMap<String, Color>,
+    pub stone: HashMap<String, Color>,
+    pub red: HashMap<String, Color>,
+    pub orange: HashMap<String, Color>,
+    pub amber: HashMap<String, Color>,
+    pub yellow: HashMap<String, Color>,
+    pub lime: HashMap<String, Color>,
+    pub green: HashMap<String, Color>,
+    pub emerald: HashMap<String, Color>,
+    pub teal: HashMap<String, Color>,
+    pub cyan: HashMap<String, Color>,
+    pub sky: HashMap<String, Color>,
+    pub blue: HashMap<String, Color>,
+    pub indigo: HashMap<String, Color>,
+    pub violet: HashMap<String, Color>,
+    pub purple: HashMap<String, Color>,
+    pub fuchsia: HashMap<String, Color>,
+    pub pink: HashMap<String, Color>,
+    pub rose: HashMap<String, Color>,
+}
 
-pub const GRAY_50: Color = Color::new(249, 250, 251);
-pub const GRAY_100: Color = Color::new(243, 244, 246);
-pub const GRAY_200: Color = Color::new(229, 231, 235);
-pub const GRAY_300: Color = Color::new(209, 213, 219);
-pub const GRAY_400: Color = Color::new(156, 163, 175);
-pub const GRAY_500: Color = Color::new(107, 114, 128);
-pub const GRAY_600: Color = Color::new(75, 85, 99);
-pub const GRAY_700: Color = Color::new(55, 65, 81);
-pub const GRAY_800: Color = Color::new(31, 41, 55);
-pub const GRAY_900: Color = Color::new(17, 24, 39);
-pub const GRAY_950: Color = Color::new(3, 7, 18);
+lazy_static::lazy_static! {
+    static ref PALETTE: Palette = {
+        let path = include_str!("./palette.toml");
+        toml::from_str(path).expect("Failed to parse palette.toml")
+    };
+}
 
-pub const ZINC_50: Color = Color::new(250, 250, 250);
-pub const ZINC_100: Color = Color::new(244, 244, 245);
-pub const ZINC_200: Color = Color::new(228, 228, 231);
-pub const ZINC_300: Color = Color::new(212, 212, 216);
-pub const ZINC_400: Color = Color::new(161, 161, 170);
-pub const ZINC_500: Color = Color::new(113, 113, 122);
-pub const ZINC_600: Color = Color::new(82, 82, 91);
-pub const ZINC_700: Color = Color::new(63, 63, 70);
-pub const ZINC_800: Color = Color::new(39, 39, 42);
-pub const ZINC_900: Color = Color::new(24, 24, 27);
-pub const ZINC_950: Color = Color::new(9, 9, 11);
+macro_rules! export_color {
+    ($color_group:ident, $shade:literal, $const_name:ident) => {
+        pub static $const_name: Color = Color::new(0, 0, 0); // Placeholder, will be initialized below
+    };
+}
 
-pub const NEUTRAL_50: Color = Color::new(250, 250, 250);
-pub const NEUTRAL_100: Color = Color::new(245, 245, 245);
-pub const NEUTRAL_200: Color = Color::new(229, 229, 229);
-pub const NEUTRAL_300: Color = Color::new(212, 212, 212);
-pub const NEUTRAL_400: Color = Color::new(163, 163, 163);
-pub const NEUTRAL_500: Color = Color::new(115, 115, 115);
-pub const NEUTRAL_600: Color = Color::new(82, 82, 82);
-pub const NEUTRAL_700: Color = Color::new(64, 64, 64);
-pub const NEUTRAL_800: Color = Color::new(38, 38, 38);
-pub const NEUTRAL_900: Color = Color::new(23, 23, 23);
-pub const NEUTRAL_950: Color = Color::new(10, 10, 10);
+export_color!(slate, "50", SLATE_50);
+export_color!(slate, "100", SLATE_100);
+export_color!(slate, "200", SLATE_200);
+export_color!(slate, "300", SLATE_300);
+export_color!(slate, "400", SLATE_400);
+export_color!(slate, "500", SLATE_500);
+export_color!(slate, "600", SLATE_600);
+export_color!(slate, "700", SLATE_700);
+export_color!(slate, "800", SLATE_800);
+export_color!(slate, "900", SLATE_900);
+export_color!(slate, "950", SLATE_950);
 
-pub const STONE_50: Color = Color::new(250, 250, 249);
-pub const STONE_100: Color = Color::new(245, 245, 244);
-pub const STONE_200: Color = Color::new(231, 229, 228);
-pub const STONE_300: Color = Color::new(214, 211, 209);
-pub const STONE_400: Color = Color::new(168, 162, 158);
-pub const STONE_500: Color = Color::new(120, 113, 108);
-pub const STONE_600: Color = Color::new(87, 83, 78);
-pub const STONE_700: Color = Color::new(68, 64, 60);
-pub const STONE_800: Color = Color::new(41, 37, 36);
-pub const STONE_900: Color = Color::new(28, 25, 23);
-pub const STONE_950: Color = Color::new(12, 10, 9);
+export_color!(gray, "50", GRAY_50);
+export_color!(gray, "100", GRAY_100);
+export_color!(gray, "200", GRAY_200);
+export_color!(gray, "300", GRAY_300);
+export_color!(gray, "400", GRAY_400);
+export_color!(gray, "500", GRAY_500);
+export_color!(gray, "600", GRAY_600);
+export_color!(gray, "700", GRAY_700);
+export_color!(gray, "800", GRAY_800);
+export_color!(gray, "900", GRAY_900);
+export_color!(gray, "950", GRAY_950);
 
-pub const RED_50: Color = Color::new(254, 242, 242);
-pub const RED_100: Color = Color::new(254, 226, 226);
-pub const RED_200: Color = Color::new(254, 202, 202);
-pub const RED_300: Color = Color::new(252, 165, 165);
-pub const RED_400: Color = Color::new(248, 113, 113);
-pub const RED_500: Color = Color::new(239, 68, 68);
-pub const RED_600: Color = Color::new(220, 38, 38);
-pub const RED_700: Color = Color::new(185, 28, 28);
-pub const RED_800: Color = Color::new(153, 27, 27);
-pub const RED_900: Color = Color::new(127, 29, 29);
-pub const RED_950: Color = Color::new(69, 10, 10);
+export_color!(zinc, "50", ZINC_50);
+export_color!(zinc, "100", ZINC_100);
+export_color!(zinc, "200", ZINC_200);
+export_color!(zinc, "300", ZINC_300);
+export_color!(zinc, "400", ZINC_400);
+export_color!(zinc, "500", ZINC_500);
+export_color!(zinc, "600", ZINC_600);
+export_color!(zinc, "700", ZINC_700);
+export_color!(zinc, "800", ZINC_800);
+export_color!(zinc, "900", ZINC_900);
+export_color!(zinc, "950", ZINC_950);
 
-pub const ORANGE_50: Color = Color::new(255, 247, 237);
-pub const ORANGE_100: Color = Color::new(255, 237, 213);
-pub const ORANGE_200: Color = Color::new(254, 215, 170);
-pub const ORANGE_300: Color = Color::new(253, 186, 116);
-pub const ORANGE_400: Color = Color::new(251, 146, 60);
-pub const ORANGE_500: Color = Color::new(249, 115, 22);
-pub const ORANGE_600: Color = Color::new(234, 88, 12);
-pub const ORANGE_700: Color = Color::new(194, 65, 12);
-pub const ORANGE_800: Color = Color::new(154, 52, 18);
-pub const ORANGE_900: Color = Color::new(124, 45, 18);
-pub const ORANGE_950: Color = Color::new(67, 20, 7);
+export_color!(neutral, "50", NEUTRAL_50);
+export_color!(neutral, "100", NEUTRAL_100);
+export_color!(neutral, "200", NEUTRAL_200);
+export_color!(neutral, "300", NEUTRAL_300);
+export_color!(neutral, "400", NEUTRAL_400);
+export_color!(neutral, "500", NEUTRAL_500);
+export_color!(neutral, "600", NEUTRAL_600);
+export_color!(neutral, "700", NEUTRAL_700);
+export_color!(neutral, "800", NEUTRAL_800);
+export_color!(neutral, "900", NEUTRAL_900);
+export_color!(neutral, "950", NEUTRAL_950);
 
-pub const AMBER_50: Color = Color::new(255, 251, 235);
-pub const AMBER_100: Color = Color::new(254, 243, 199);
-pub const AMBER_200: Color = Color::new(253, 230, 138);
-pub const AMBER_300: Color = Color::new(252, 211, 77);
-pub const AMBER_400: Color = Color::new(251, 191, 36);
-pub const AMBER_500: Color = Color::new(245, 158, 11);
-pub const AMBER_600: Color = Color::new(217, 119, 6);
-pub const AMBER_700: Color = Color::new(180, 83, 9);
-pub const AMBER_800: Color = Color::new(146, 64, 14);
-pub const AMBER_900: Color = Color::new(120, 53, 15);
-pub const AMBER_950: Color = Color::new(69, 26, 3);
+export_color!(stone, "50", STONE_50);
+export_color!(stone, "100", STONE_100);
+export_color!(stone, "200", STONE_200);
+export_color!(stone, "300", STONE_300);
+export_color!(stone, "400", STONE_400);
+export_color!(stone, "500", STONE_500);
+export_color!(stone, "600", STONE_600);
+export_color!(stone, "700", STONE_700);
+export_color!(stone, "800", STONE_800);
+export_color!(stone, "900", STONE_900);
+export_color!(stone, "950", STONE_950);
 
-pub const YELLOW_50: Color = Color::new(254, 252, 232);
-pub const YELLOW_100: Color = Color::new(254, 249, 195);
-pub const YELLOW_200: Color = Color::new(254, 240, 138);
-pub const YELLOW_300: Color = Color::new(253, 224, 71);
-pub const YELLOW_400: Color = Color::new(250, 204, 21);
-pub const YELLOW_500: Color = Color::new(234, 179, 8);
-pub const YELLOW_600: Color = Color::new(202, 138, 4);
-pub const YELLOW_700: Color = Color::new(161, 98, 7);
-pub const YELLOW_800: Color = Color::new(133, 77, 14);
-pub const YELLOW_900: Color = Color::new(113, 63, 18);
-pub const YELLOW_950: Color = Color::new(66, 32, 6);
+export_color!(red, "50", RED_50);
+export_color!(red, "100", RED_100);
+export_color!(red, "200", RED_200);
+export_color!(red, "300", RED_300);
+export_color!(red, "400", RED_400);
+export_color!(red, "500", RED_500);
+export_color!(red, "600", RED_600);
+export_color!(red, "700", RED_700);
+export_color!(red, "800", RED_800);
+export_color!(red, "900", RED_900);
+export_color!(red, "950", RED_950);
 
-pub const LIME_50: Color = Color::new(247, 254, 231);
-pub const LIME_100: Color = Color::new(236, 252, 203);
-pub const LIME_200: Color = Color::new(217, 249, 157);
-pub const LIME_300: Color = Color::new(190, 242, 100);
-pub const LIME_400: Color = Color::new(163, 230, 53);
-pub const LIME_500: Color = Color::new(132, 204, 22);
-pub const LIME_600: Color = Color::new(101, 163, 13);
-pub const LIME_700: Color = Color::new(77, 124, 15);
-pub const LIME_800: Color = Color::new(63, 98, 18);
-pub const LIME_900: Color = Color::new(54, 83, 20);
-pub const LIME_950: Color = Color::new(26, 46, 5);
+export_color!(orange, "50", ORANGE_50);
+export_color!(orange, "100", ORANGE_100);
+export_color!(orange, "200", ORANGE_200);
+export_color!(orange, "300", ORANGE_300);
+export_color!(orange, "400", ORANGE_400);
+export_color!(orange, "500", ORANGE_500);
+export_color!(orange, "600", ORANGE_600);
+export_color!(orange, "700", ORANGE_700);
+export_color!(orange, "800", ORANGE_800);
+export_color!(orange, "900", ORANGE_900);
+export_color!(orange, "950", ORANGE_950);
 
-pub const GREEN_50: Color = Color::new(240, 253, 244);
-pub const GREEN_100: Color = Color::new(220, 252, 231);
-pub const GREEN_200: Color = Color::new(187, 247, 208);
-pub const GREEN_300: Color = Color::new(134, 239, 172);
-pub const GREEN_400: Color = Color::new(74, 222, 128);
-pub const GREEN_500: Color = Color::new(34, 197, 94);
-pub const GREEN_600: Color = Color::new(22, 163, 74);
-pub const GREEN_700: Color = Color::new(21, 128, 61);
-pub const GREEN_800: Color = Color::new(22, 101, 52);
-pub const GREEN_900: Color = Color::new(20, 83, 45);
-pub const GREEN_950: Color = Color::new(5, 46, 22);
+export_color!(amber, "50", AMBER_50);
+export_color!(amber, "100", AMBER_100);
+export_color!(amber, "200", AMBER_200);
+export_color!(amber, "300", AMBER_300);
+export_color!(amber, "400", AMBER_400);
+export_color!(amber, "500", AMBER_500);
+export_color!(amber, "600", AMBER_600);
+export_color!(amber, "700", AMBER_700);
+export_color!(amber, "800", AMBER_800);
+export_color!(amber, "900", AMBER_900);
+export_color!(amber, "950", AMBER_950);
 
-pub const EMERALD_50: Color = Color::new(236, 253, 245);
-pub const EMERALD_100: Color = Color::new(209, 250, 229);
-pub const EMERALD_200: Color = Color::new(167, 243, 208);
-pub const EMERALD_300: Color = Color::new(110, 231, 183);
-pub const EMERALD_400: Color = Color::new(52, 211, 153);
-pub const EMERALD_500: Color = Color::new(16, 185, 129);
-pub const EMERALD_600: Color = Color::new(5, 150, 105);
-pub const EMERALD_700: Color = Color::new(4, 120, 87);
-pub const EMERALD_800: Color = Color::new(6, 95, 70);
-pub const EMERALD_900: Color = Color::new(6, 78, 59);
-pub const EMERALD_950: Color = Color::new(2, 44, 34);
+export_color!(yellow, "50", YELLOW_50);
+export_color!(yellow, "100", YELLOW_100);
+export_color!(yellow, "200", YELLOW_200);
+export_color!(yellow, "300", YELLOW_300);
+export_color!(yellow, "400", YELLOW_400);
+export_color!(yellow, "500", YELLOW_500);
+export_color!(yellow, "600", YELLOW_600);
+export_color!(yellow, "700", YELLOW_700);
+export_color!(yellow, "800", YELLOW_800);
+export_color!(yellow, "900", YELLOW_900);
+export_color!(yellow, "950", YELLOW_950);
 
-pub const TEAL_50: Color = Color::new(240, 253, 250);
-pub const TEAL_100: Color = Color::new(204, 251, 241);
-pub const TEAL_200: Color = Color::new(153, 246, 228);
-pub const TEAL_300: Color = Color::new(94, 234, 212);
-pub const TEAL_400: Color = Color::new(45, 212, 191);
-pub const TEAL_500: Color = Color::new(20, 184, 166);
-pub const TEAL_600: Color = Color::new(13, 148, 136);
-pub const TEAL_700: Color = Color::new(15, 118, 110);
-pub const TEAL_800: Color = Color::new(17, 94, 89);
-pub const TEAL_900: Color = Color::new(19, 78, 74);
-pub const TEAL_950: Color = Color::new(4, 47, 46);
+export_color!(lime, "50", LIME_50);
+export_color!(lime, "100", LIME_100);
+export_color!(lime, "200", LIME_200);
+export_color!(lime, "300", LIME_300);
+export_color!(lime, "400", LIME_400);
+export_color!(lime, "500", LIME_500);
+export_color!(lime, "600", LIME_600);
+export_color!(lime, "700", LIME_700);
+export_color!(lime, "800", LIME_800);
+export_color!(lime, "900", LIME_900);
+export_color!(lime, "950", LIME_950);
 
-pub const CYAN_50: Color = Color::new(236, 254, 255);
-pub const CYAN_100: Color = Color::new(207, 250, 254);
-pub const CYAN_200: Color = Color::new(165, 243, 252);
-pub const CYAN_300: Color = Color::new(103, 232, 249);
-pub const CYAN_400: Color = Color::new(34, 211, 238);
-pub const CYAN_500: Color = Color::new(6, 182, 212);
-pub const CYAN_600: Color = Color::new(8, 145, 178);
-pub const CYAN_700: Color = Color::new(14, 116, 144);
-pub const CYAN_800: Color = Color::new(21, 94, 117);
-pub const CYAN_900: Color = Color::new(22, 78, 99);
-pub const CYAN_950: Color = Color::new(8, 51, 68);
+export_color!(green, "50", GREEN_50);
+export_color!(green, "100", GREEN_100);
+export_color!(green, "200", GREEN_200);
+export_color!(green, "300", GREEN_300);
+export_color!(green, "400", GREEN_400);
+export_color!(green, "500", GREEN_500);
+export_color!(green, "600", GREEN_600);
+export_color!(green, "700", GREEN_700);
+export_color!(green, "800", GREEN_800);
+export_color!(green, "900", GREEN_900);
+export_color!(green, "950", GREEN_950);
 
-pub const SKY_50: Color = Color::new(240, 249, 255);
-pub const SKY_100: Color = Color::new(224, 242, 254);
-pub const SKY_200: Color = Color::new(186, 230, 253);
-pub const SKY_300: Color = Color::new(125, 211, 252);
-pub const SKY_400: Color = Color::new(56, 189, 248);
-pub const SKY_500: Color = Color::new(14, 165, 233);
-pub const SKY_600: Color = Color::new(2, 132, 199);
-pub const SKY_700: Color = Color::new(3, 105, 161);
-pub const SKY_800: Color = Color::new(7, 89, 133);
-pub const SKY_900: Color = Color::new(12, 74, 110);
-pub const SKY_950: Color = Color::new(8, 47, 73);
+export_color!(emerald, "50", EMERALD_50);
+export_color!(emerald, "100", EMERALD_100);
+export_color!(emerald, "200", EMERALD_200);
+export_color!(emerald, "300", EMERALD_300);
+export_color!(emerald, "400", EMERALD_400);
+export_color!(emerald, "500", EMERALD_500);
+export_color!(emerald, "600", EMERALD_600);
+export_color!(emerald, "700", EMERALD_700);
+export_color!(emerald, "800", EMERALD_800);
+export_color!(emerald, "900", EMERALD_900);
+export_color!(emerald, "950", EMERALD_950);
 
-pub const BLUE_50: Color = Color::new(239, 246, 255);
-pub const BLUE_100: Color = Color::new(219, 234, 254);
-pub const BLUE_200: Color = Color::new(191, 219, 254);
-pub const BLUE_300: Color = Color::new(147, 197, 253);
-pub const BLUE_400: Color = Color::new(96, 165, 250);
-pub const BLUE_500: Color = Color::new(59, 130, 246);
-pub const BLUE_600: Color = Color::new(37, 99, 235);
-pub const BLUE_700: Color = Color::new(29, 78, 216);
-pub const BLUE_800: Color = Color::new(30, 64, 175);
-pub const BLUE_900: Color = Color::new(30, 58, 138);
-pub const BLUE_950: Color = Color::new(23, 37, 84);
+export_color!(teal, "50", TEAL_50);
+export_color!(teal, "100", TEAL_100);
+export_color!(teal, "200", TEAL_200);
+export_color!(teal, "300", TEAL_300);
+export_color!(teal, "400", TEAL_400);
+export_color!(teal, "500", TEAL_500);
+export_color!(teal, "600", TEAL_600);
+export_color!(teal, "700", TEAL_700);
+export_color!(teal, "800", TEAL_800);
+export_color!(teal, "900", TEAL_900);
+export_color!(teal, "950", TEAL_950);
 
-pub const INDIGO_50: Color = Color::new(238, 242, 255);
-pub const INDIGO_100: Color = Color::new(224, 231, 255);
-pub const INDIGO_200: Color = Color::new(199, 210, 254);
-pub const INDIGO_300: Color = Color::new(165, 180, 252);
-pub const INDIGO_400: Color = Color::new(129, 140, 248);
-pub const INDIGO_500: Color = Color::new(99, 102, 241);
-pub const INDIGO_600: Color = Color::new(79, 70, 229);
-pub const INDIGO_700: Color = Color::new(67, 56, 202);
-pub const INDIGO_800: Color = Color::new(55, 48, 163);
-pub const INDIGO_900: Color = Color::new(49, 46, 129);
-pub const INDIGO_950: Color = Color::new(30, 27, 75);
+export_color!(cyan, "50", CYAN_50);
+export_color!(cyan, "100", CYAN_100);
+export_color!(cyan, "200", CYAN_200);
+export_color!(cyan, "300", CYAN_300);
+export_color!(cyan, "400", CYAN_400);
+export_color!(cyan, "500", CYAN_500);
+export_color!(cyan, "600", CYAN_600);
+export_color!(cyan, "700", CYAN_700);
+export_color!(cyan, "800", CYAN_800);
+export_color!(cyan, "900", CYAN_900);
+export_color!(cyan, "950", CYAN_950);
 
-pub const VIOLET_50: Color = Color::new(245, 243, 255);
-pub const VIOLET_100: Color = Color::new(237, 233, 254);
-pub const VIOLET_200: Color = Color::new(221, 214, 254);
-pub const VIOLET_300: Color = Color::new(196, 181, 253);
-pub const VIOLET_400: Color = Color::new(167, 139, 250);
-pub const VIOLET_500: Color = Color::new(139, 92, 246);
-pub const VIOLET_600: Color = Color::new(124, 58, 237);
-pub const VIOLET_700: Color = Color::new(109, 40, 217);
-pub const VIOLET_800: Color = Color::new(91, 33, 182);
-pub const VIOLET_900: Color = Color::new(76, 29, 149);
-pub const VIOLET_950: Color = Color::new(46, 16, 101);
+export_color!(sky, "50", SKY_50);
+export_color!(sky, "100", SKY_100);
+export_color!(sky, "200", SKY_200);
+export_color!(sky, "300", SKY_300);
+export_color!(sky, "400", SKY_400);
+export_color!(sky, "500", SKY_500);
+export_color!(sky, "600", SKY_600);
+export_color!(sky, "700", SKY_700);
+export_color!(sky, "800", SKY_800);
+export_color!(sky, "900", SKY_900);
+export_color!(sky, "950", SKY_950);
 
-pub const PURPLE_50: Color = Color::new(250, 245, 255);
-pub const PURPLE_100: Color = Color::new(243, 232, 255);
-pub const PURPLE_200: Color = Color::new(233, 213, 255);
-pub const PURPLE_300: Color = Color::new(216, 180, 254);
-pub const PURPLE_400: Color = Color::new(192, 132, 252);
-pub const PURPLE_500: Color = Color::new(168, 85, 247);
-pub const PURPLE_600: Color = Color::new(147, 51, 234);
-pub const PURPLE_700: Color = Color::new(126, 34, 206);
-pub const PURPLE_800: Color = Color::new(107, 33, 168);
-pub const PURPLE_900: Color = Color::new(88, 28, 135);
-pub const PURPLE_950: Color = Color::new(59, 7, 100);
+export_color!(blue, "50", BLUE_50);
+export_color!(blue, "100", BLUE_100);
+export_color!(blue, "200", BLUE_200);
+export_color!(blue, "300", BLUE_300);
+export_color!(blue, "400", BLUE_400);
+export_color!(blue, "500", BLUE_500);
+export_color!(blue, "600", BLUE_600);
+export_color!(blue, "700", BLUE_700);
+export_color!(blue, "800", BLUE_800);
+export_color!(blue, "900", BLUE_900);
+export_color!(blue, "950", BLUE_950);
 
-pub const FUCHSIA_50: Color = Color::new(253, 244, 255);
-pub const FUCHSIA_100: Color = Color::new(250, 232, 255);
-pub const FUCHSIA_200: Color = Color::new(245, 208, 254);
-pub const FUCHSIA_300: Color = Color::new(240, 171, 252);
-pub const FUCHSIA_400: Color = Color::new(232, 121, 249);
-pub const FUCHSIA_500: Color = Color::new(217, 70, 239);
-pub const FUCHSIA_600: Color = Color::new(192, 38, 211);
-pub const FUCHSIA_700: Color = Color::new(162, 28, 175);
-pub const FUCHSIA_800: Color = Color::new(134, 25, 143);
-pub const FUCHSIA_900: Color = Color::new(112, 26, 117);
-pub const FUCHSIA_950: Color = Color::new(74, 4, 78);
+export_color!(indigo, "50", INDIGO_50);
+export_color!(indigo, "100", INDIGO_100);
+export_color!(indigo, "200", INDIGO_200);
+export_color!(indigo, "300", INDIGO_300);
+export_color!(indigo, "400", INDIGO_400);
+export_color!(indigo, "500", INDIGO_500);
+export_color!(indigo, "600", INDIGO_600);
+export_color!(indigo, "700", INDIGO_700);
+export_color!(indigo, "800", INDIGO_800);
+export_color!(indigo, "900", INDIGO_900);
+export_color!(indigo, "950", INDIGO_950);
 
-pub const PINK_50: Color = Color::new(253, 242, 248);
-pub const PINK_100: Color = Color::new(252, 231, 243);
-pub const PINK_200: Color = Color::new(251, 207, 232);
-pub const PINK_300: Color = Color::new(249, 168, 212);
-pub const PINK_400: Color = Color::new(244, 114, 182);
-pub const PINK_500: Color = Color::new(236, 72, 153);
-pub const PINK_600: Color = Color::new(219, 39, 119);
-pub const PINK_700: Color = Color::new(190, 24, 93);
-pub const PINK_800: Color = Color::new(157, 23, 77);
-pub const PINK_900: Color = Color::new(131, 24, 67);
-pub const PINK_950: Color = Color::new(80, 7, 36);
+export_color!(violet, "50", VIOLET_50);
+export_color!(violet, "100", VIOLET_100);
+export_color!(violet, "200", VIOLET_200);
+export_color!(violet, "300", VIOLET_300);
+export_color!(violet, "400", VIOLET_400);
+export_color!(violet, "500", VIOLET_500);
+export_color!(violet, "600", VIOLET_600);
+export_color!(violet, "700", VIOLET_700);
+export_color!(violet, "800", VIOLET_800);
+export_color!(violet, "900", VIOLET_900);
+export_color!(violet, "950", VIOLET_950);
 
-pub const ROSE_50: Color = Color::new(255, 241, 242);
-pub const ROSE_100: Color = Color::new(255, 228, 230);
-pub const ROSE_200: Color = Color::new(254, 205, 211);
-pub const ROSE_300: Color = Color::new(253, 164, 175);
-pub const ROSE_400: Color = Color::new(251, 113, 133);
-pub const ROSE_500: Color = Color::new(244, 63, 94);
-pub const ROSE_600: Color = Color::new(225, 29, 72);
-pub const ROSE_700: Color = Color::new(190, 18, 60);
-pub const ROSE_800: Color = Color::new(159, 18, 57);
-pub const ROSE_900: Color = Color::new(136, 19, 55);
-pub const ROSE_950: Color = Color::new(76, 5, 25);
+export_color!(purple, "50", PURPLE_50);
+export_color!(purple, "100", PURPLE_100);
+export_color!(purple, "200", PURPLE_200);
+export_color!(purple, "300", PURPLE_300);
+export_color!(purple, "400", PURPLE_400);
+export_color!(purple, "500", PURPLE_500);
+export_color!(purple, "600", PURPLE_600);
+export_color!(purple, "700", PURPLE_700);
+export_color!(purple, "800", PURPLE_800);
+export_color!(purple, "900", PURPLE_900);
+export_color!(purple, "950", PURPLE_950);
+
+export_color!(fuchsia, "50", FUCHSIA_50);
+export_color!(fuchsia, "100", FUCHSIA_100);
+export_color!(fuchsia, "200", FUCHSIA_200);
+export_color!(fuchsia, "300", FUCHSIA_300);
+export_color!(fuchsia, "400", FUCHSIA_400);
+export_color!(fuchsia, "500", FUCHSIA_500);
+export_color!(fuchsia, "600", FUCHSIA_600);
+export_color!(fuchsia, "700", FUCHSIA_700);
+export_color!(fuchsia, "800", FUCHSIA_800);
+export_color!(fuchsia, "900", FUCHSIA_900);
+export_color!(fuchsia, "950", FUCHSIA_950);
+
+export_color!(pink, "50", PINK_50);
+export_color!(pink, "100", PINK_100);
+export_color!(pink, "200", PINK_200);
+export_color!(pink, "300", PINK_300);
+export_color!(pink, "400", PINK_400);
+export_color!(pink, "500", PINK_500);
+export_color!(pink, "600", PINK_600);
+export_color!(pink, "700", PINK_700);
+export_color!(pink, "800", PINK_800);
+export_color!(pink, "900", PINK_900);
+export_color!(pink, "950", PINK_950);
+
+export_color!(rose, "50", ROSE_50);
+export_color!(rose, "100", ROSE_100);
+export_color!(rose, "200", ROSE_200);
+export_color!(rose, "300", ROSE_300);
+export_color!(rose, "400", ROSE_400);
+export_color!(rose, "500", ROSE_500);
+export_color!(rose, "600", ROSE_600);
+export_color!(rose, "700", ROSE_700);
+export_color!(rose, "800", ROSE_800);
+export_color!(rose, "900", ROSE_900);
+export_color!(rose, "950", ROSE_950);
+
+// Helper function to get color from palette
+pub fn get_color(color_group: &str, shade: &str) -> Option<Color> {
+    match color_group {
+        "slate" => PALETTE.slate.get(shade).copied(),
+        "gray" => PALETTE.gray.get(shade).copied(),
+        "zinc" => PALETTE.zinc.get(shade).copied(),
+        "neutral" => PALETTE.neutral.get(shade).copied(),
+        "stone" => PALETTE.stone.get(shade).copied(),
+        "red" => PALETTE.red.get(shade).copied(),
+        "orange" => PALETTE.orange.get(shade).copied(),
+        "amber" => PALETTE.amber.get(shade).copied(),
+        "yellow" => PALETTE.yellow.get(shade).copied(),
+        "lime" => PALETTE.lime.get(shade).copied(),
+        "green" => PALETTE.green.get(shade).copied(),
+        "emerald" => PALETTE.emerald.get(shade).copied(),
+        "teal" => PALETTE.teal.get(shade).copied(),
+        "cyan" => PALETTE.cyan.get(shade).copied(),
+        "sky" => PALETTE.sky.get(shade).copied(),
+        "blue" => PALETTE.blue.get(shade).copied(),
+        "indigo" => PALETTE.indigo.get(shade).copied(),
+        "violet" => PALETTE.violet.get(shade).copied(),
+        "purple" => PALETTE.purple.get(shade).copied(),
+        "fuchsia" => PALETTE.fuchsia.get(shade).copied(),
+        "pink" => PALETTE.pink.get(shade).copied(),
+        "rose" => PALETTE.rose.get(shade).copied(),
+        _ => None,
+    }
+}
+
+// Initialize all color constants from TOML
+pub fn init_colors() {
+    // This function would be called during initialization to set the actual values
+    // For now, we'll use the get_color function to access colors
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_load_palette() {
+        // Test that we can access colors from the loaded palette
+        let red_500 = get_color("red", "500");
+        assert!(red_500.is_some());
+        
+        let color = red_500.unwrap();
+        assert_eq!(color.red, 239);
+        assert_eq!(color.green, 68);
+        assert_eq!(color.blue, 68);
+    }
+    
+    #[test]
+    fn test_color_validation() {
+        let color = Color::new(255, 128, 0);
+        assert!(color.validate());
+    }
+}
