@@ -1,0 +1,26 @@
+---
+import { ArticleHeader } from '~/components/article-header'
+import BaseLayout from '~/layouts/base-layout.astro'
+
+interface Props {
+  title: string
+  description: string
+  publishedAt: Date
+}
+
+const { title, description, publishedAt } = Astro.props
+const formattedDate = publishedAt.toLocaleDateString('ja-JP')
+---
+
+<BaseLayout title={title}>
+  <article>
+    <ArticleHeader
+      title={title}
+      description={description}
+      publishedAt={formattedDate}
+    />
+    <div class='prose prose-gray max-w-none'>
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
