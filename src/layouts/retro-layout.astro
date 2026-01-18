@@ -1,0 +1,108 @@
+---
+import { render } from 'astro:content'
+import { RetroSummary } from '~/components/retro-summary'
+import BaseLayout from '~/layouts/base-layout.astro'
+
+interface IssueData {
+  kind: 'issue'
+  issue: number
+  title: string
+  url: string
+  status: string
+  start: Date | null
+  end: Date | null
+  estimated: number | null
+  actual: number | null
+}
+
+interface IssuePost {
+  id: string
+  collection: 'posts'
+  data: IssueData
+}
+
+interface Props {
+  title: string
+  sprint: number
+  start: Date
+  end: Date
+  issuePosts: IssuePost[]
+}
+
+const { title, sprint, start, end, issuePosts } = Astro.props
+
+function formatDate(date: Date | null): string {
+  if (!date) return '-'
+  return date.toISOString().split('T')[0]
+}
+
+const meta = {
+  title,
+  sprint,
+  start: formatDate(start),
+  end: formatDate(end),
+}
+
+const issues = issuePosts.map(p => ({
+  ...p.data,
+  start: formatDate(p.data.start),
+  end: formatDate(p.data.end),
+}))
+
+function statusColor(status: string): string {
+  switch (status) {
+    case 'やった':
+      return 'bg-green-100 text-green-800'
+    case 'やめた':
+      return 'bg-gray-100 text-gray-800'
+    default:
+      return 'bg-blue-100 text-blue-800'
+  }
+}
+---
+
+<BaseLayout title={title}>
+  <header class="mb-8">
+    <h1 class="mb-2 font-bold text-3xl">{meta.title}</h1>
+    <p class="text-gray-600">{meta.start} → {meta.end}</p>
+  </header>
+
+  <RetroSummary issues={issues} client:load />
+
+  <section class="mb-8 prose prose-gray max-w-none">
+    <slot />
+  </section>
+
+  {issuePosts.map(async (post) => {
+    const { Content } = await render(post)
+    const issue = post.data
+    return (
+      <section class="mb-8">
+        <h2 class="mb-2 font-semibold text-xl flex items-center">
+          <span class={` mr-2 rounded px-2 py-1 font-medium text-xs ${statusColor(issue.status)}`}>
+            {issue.status}
+          </span>
+          <a
+            href={issue.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-blue-600 hover:underline"
+          >
+            {issue.title}
+          </a>
+        </h2>
+        <div class="mb-3 flex gap-4 text-gray-600 text-sm">
+          {issue.start && issue.end && (
+            <span>{formatDate(issue.start)} → {formatDate(issue.end)}</span>
+          )}
+          {issue.estimated !== null && issue.actual !== null && (
+            <span>見積: {issue.estimated}h / 実績: {issue.actual}h</span>
+          )}
+        </div>
+        <div class="prose prose-gray max-w-none">
+          <Content />
+        </div>
+      </section>
+    )
+  })}
+</BaseLayout>

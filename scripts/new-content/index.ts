@@ -11,7 +11,7 @@ const kind = ensureKind(arg)
 
 const uuid = uuidv7()
 const template = join(root, `scripts/new-content/templates/${kind}.mdx`)
-const dest = join(root, `src/content/blog/${uuid}.mdx`)
+const dest = join(root, `src/content/${uuid}.mdx`)
 
 copyFileSync(template, dest)
 

@@ -1,23 +1,53 @@
 ---
-import { getCollection, render } from 'astro:content'
-import BlogLayout from '~/layouts/blog-layout.astro'
+import { render } from 'astro:content'
+import { getPosts } from '~/content.config'
+import RetroLayout from '~/layouts/retro-layout.astro'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog')
-  return posts.map(post => ({
-    params: { slug: post.id },
-    props: { post },
-  }))
+  const posts = await getPosts()
+
+  const grouped = new Map<string, typeof posts>()
+  for (const post of posts) {
+    const parts = post.id.split('/')
+    const dirId = parts.length > 1 ? parts[0] : post.id
+    if (!grouped.has(dirId)) {
+      grouped.set(dirId, [])
+    }
+    grouped.get(dirId)?.push(post)
+  }
+
+  return Array.from(grouped.entries()).map(([dirId, dirPosts]) => {
+    const indexPost = dirPosts.find(
+      p => p.id.endsWith('/index') || p.id === dirId
+    )
+    const kind = indexPost?.data.kind ?? 'blog'
+
+    return {
+      params: { slug: dirId },
+      props: { kind, posts: dirPosts, indexPost },
+    }
+  })
 }
 
-const { post } = Astro.props
-const { Content } = await render(post)
+const { posts, indexPost } = Astro.props
+
+const issuePosts = posts
+  .filter(
+    (p): p is typeof p & { data: { kind: 'issue' } } => p.data.kind === 'issue'
+  )
+  .sort((a, b) => a.data.issue - b.data.issue)
+
+const Content = indexPost ? (await render(indexPost)).Content : null
 ---
 
-<BlogLayout
-  title={post.data.title}
-  description={post.data.description}
-  publishedAt={post.data.publishedAt}
->
-  <Content />
-</BlogLayout>
+{indexPost?.data.kind === 'retro' && Content && (
+  <RetroLayout
+    title={indexPost.data.title}
+    sprint={indexPost.data.sprint}
+    start={indexPost.data.start}
+    end={indexPost.data.end}
+    issuePosts={issuePosts}
+  >
+    <Content />
+  </RetroLayout>
+)}
