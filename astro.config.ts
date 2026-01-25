@@ -1,10 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
 import tailwindcss from '@tailwindcss/vite'
-import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import solidJs from '@astrojs/solid-js'
 import { rehypeTrimKeywordSpaces } from './src/plugins/rehype-trim-keyword-spaces.js'
+import remarkBreaks from 'remark-breaks'
 
 export default defineConfig({
   integrations: [mdx(), solidJs()],
@@ -32,7 +32,7 @@ export default defineConfig({
         }
       },
     },
+    remarkPlugins: [remarkBreaks],
     rehypePlugins: [rehypeTrimKeywordSpaces]
-  },
-  adapter: cloudflare()
+  }
 })
