@@ -1,0 +1,6 @@
+{
+  "title": "pulldown-cmarkで作るMarkdownパーサー",
+  "date": "2025-06-29",
+  "description": "Rustの軽量Markdownパーサーpulldown-cmarkを使って、ブログシステムのMarkdown変換機能を実装します。",
+  "tags": ["rust"]
+}

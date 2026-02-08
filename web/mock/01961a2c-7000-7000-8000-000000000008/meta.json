@@ -1,0 +1,6 @@
+{
+  "title": "WGSLシェーダー言語入門",
+  "date": "2025-07-20",
+  "description": "WebGPU専用のシェーダー言語WGSLの基本文法と、GLSLとの違いを解説します。",
+  "tags": ["webgpu"]
+}

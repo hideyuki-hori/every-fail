@@ -1,0 +1,15 @@
+<article>
+  <h1>WebGPUで描くジェネラティブアート</h1>
+  <time datetime="2025-06-08">2025-06-08</time>
+  <div class="tags">
+    <span class="tag" data-tag="webgpu">webgpu</span>
+    <span class="tag" data-tag="typescript">typescript</span>
+  </div>
+  <p>WebGPUはWebGLの後継として設計された新しいグラフィックスAPIです。より低レベルなGPUアクセスが可能になり、コンピュートシェーダーも使えるようになりました。</p>
+  <h2>WGSLシェーダーの基本</h2>
+  <p>WebGPU Shading Language (WGSL) はWebGPU専用のシェーダー言語です。GLSLとは異なる構文を持ち、Rustに似た型システムを採用しています。</p>
+  <h2>パーティクルシステムの実装</h2>
+  <p>コンピュートシェーダーで数万のパーティクルを並列処理し、フラグメントシェーダーでレンダリングします。GPUの並列性を活かすことで、CPUでは困難な数のパーティクルをリアルタイムに動かせます。</p>
+  <h2>パフォーマンスの考慮</h2>
+  <p>バッファの使い回し、ワークグループサイズの最適化、パイプラインのキャッシュなど、WebGPUならではのパフォーマンスチューニングが重要です。</p>
+</article>

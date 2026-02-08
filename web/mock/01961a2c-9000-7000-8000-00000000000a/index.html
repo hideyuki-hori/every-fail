@@ -1,0 +1,15 @@
+<article>
+  <h1>SPAとSSGを両立させるアーキテクチャ設計</h1>
+  <time datetime="2025-08-03">2025-08-03</time>
+  <div class="tags">
+    <span class="tag" data-tag="design">design</span>
+    <span class="tag" data-tag="performance">performance</span>
+  </div>
+  <p>SEO対策には各ページの完全なHTMLが必要ですが、WebGPU背景アニメーションのような連続的な体験にはSPA構成が不可欠です。この二つを両立する設計を考えます。</p>
+  <h2>SSG + SPA ハイブリッド</h2>
+  <p>ビルド時に各ページのSSG済みHTMLを生成しつつ、ブラウザではSPAとして動作させます。初回アクセスはSSGページを返し、JS読み込み後はクライアントルーティングに切り替えます。</p>
+  <h2>HTML断片の配信</h2>
+  <p>SPA遷移時にはページ全体ではなく、コンテンツ部分のHTML断片だけをfetchします。これにより転送量を減らし、DOMの差し替えも最小限に抑えられます。</p>
+  <h2>メタデータの動的更新</h2>
+  <p>SPA遷移時には <code>document.title</code> と <code>&lt;meta&gt;</code> タグもJavaScriptで更新します。OGPクローラーはJSを実行しないため、SSG済みHTMLのメタデータが使われます。</p>
+</article>

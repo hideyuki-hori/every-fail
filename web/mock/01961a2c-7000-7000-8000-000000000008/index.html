@@ -1,0 +1,14 @@
+<article>
+  <h1>WGSLシェーダー言語入門</h1>
+  <time datetime="2025-07-20">2025-07-20</time>
+  <div class="tags">
+    <span class="tag" data-tag="webgpu">webgpu</span>
+  </div>
+  <p>WGSL (WebGPU Shading Language) はWebGPU APIで使用されるシェーダー言語です。GLSLやHLSLの経験がある方にとっては馴染みやすい構造ですが、独自の特徴もあります。</p>
+  <h2>型システム</h2>
+  <p>WGSLはRustに影響を受けた型システムを持ち、<code>vec4&lt;f32&gt;</code> のようなジェネリックな型表記を使います。型推論も限定的にサポートされています。</p>
+  <h2>バインディングとグループ</h2>
+  <p><code>@group(0) @binding(0)</code> でリソースのバインディングを指定します。ユニフォームバッファ、ストレージバッファ、テクスチャなどのリソースをシェーダーに渡せます。</p>
+  <h2>コンピュートシェーダー</h2>
+  <p><code>@compute @workgroup_size(64)</code> でワークグループサイズを指定し、汎用的なGPU計算が可能です。パーティクルシミュレーションや画像処理に最適です。</p>
+</article>

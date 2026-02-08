@@ -1,0 +1,14 @@
+<article>
+  <h1>pulldown-cmarkで作るMarkdownパーサー</h1>
+  <time datetime="2025-06-29">2025-06-29</time>
+  <div class="tags">
+    <span class="tag" data-tag="rust">rust</span>
+  </div>
+  <p>pulldown-cmarkはRustで書かれた高速なMarkdownパーサーです。CommonMark仕様に準拠しており、ストリーミングAPIを提供します。</p>
+  <h2>基本的な使い方</h2>
+  <p><code>Parser::new()</code> でMarkdownテキストをパースし、<code>html::push_html()</code> でHTMLに変換できます。イベントベースのAPIなので、変換途中でカスタム処理を挟むことも可能です。</p>
+  <h2>カスタムレンダリング</h2>
+  <p>コードブロックのシンタックスハイライト、画像パスの変換、見出しへのアンカー付与など、イベントを加工することで柔軟なカスタマイズができます。</p>
+  <h2>パフォーマンス</h2>
+  <p>pulldown-cmarkはゼロコピーパーサーで、大きなMarkdownファイルでも高速に処理できます。ベンチマークではcomrakの約2倍の速度を記録しています。</p>
+</article>

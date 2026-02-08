@@ -1,0 +1,14 @@
+<article>
+  <h1>Rustのエラーハンドリングパターン集</h1>
+  <time datetime="2025-07-27">2025-07-27</time>
+  <div class="tags">
+    <span class="tag" data-tag="rust">rust</span>
+  </div>
+  <p>Rustでは例外ではなく <code>Result&lt;T, E&gt;</code> 型を使ってエラーを処理します。この仕組みにより、エラーの発生箇所と処理箇所が型レベルで明確になります。</p>
+  <h2>thiserror vs anyhow</h2>
+  <p>ライブラリではthiserrorで構造化されたエラー型を定義し、アプリケーションではanyhowで簡潔にエラーを伝播させるのが一般的なパターンです。</p>
+  <h2>?演算子の活用</h2>
+  <p><code>?</code> 演算子はResult値をアンラップし、エラーの場合は早期リターンします。From トレイトと組み合わせることで、異なるエラー型間の自動変換も実現できます。</p>
+  <h2>カスタムエラー型の設計</h2>
+  <p>エラーに文脈情報を持たせたい場合は、enumで各バリアントを定義し、Display と Error トレイトを実装します。thiserrorの <code>#[error(...)]</code> マクロで簡潔に書けます。</p>
+</article>

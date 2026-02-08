@@ -1,0 +1,6 @@
+{
+  "title": "Rustのエラーハンドリングパターン集",
+  "date": "2025-07-27",
+  "description": "Result型、thiserror、anyhow を使い分けるRustのエラーハンドリングのベストプラクティス。",
+  "tags": ["rust"]
+}

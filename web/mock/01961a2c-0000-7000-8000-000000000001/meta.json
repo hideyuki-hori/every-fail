@@ -1,0 +1,6 @@
+{
+  "title": "Rustで始めるWebAssembly入門",
+  "date": "2025-06-01",
+  "description": "RustからWASMをコンパイルしてブラウザで動かすまでの手順を解説します。wasm-packの使い方からJavaScriptとの連携まで。",
+  "tags": ["rust", "wasm"]
+}

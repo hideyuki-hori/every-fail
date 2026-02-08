@@ -1,0 +1,6 @@
+{
+  "title": "SPAとSSGを両立させるアーキテクチャ設計",
+  "date": "2025-08-03",
+  "description": "SEOのためのSSGと、シームレスな体験のためのSPAを両立するブログシステムの設計方針。",
+  "tags": ["design", "performance"]
+}

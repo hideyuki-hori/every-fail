@@ -1,0 +1,15 @@
+<article>
+  <h1>Cloudflare Workersで実現するエッジコンピューティング</h1>
+  <time datetime="2025-06-15">2025-06-15</time>
+  <div class="tags">
+    <span class="tag" data-tag="rust">rust</span>
+    <span class="tag" data-tag="wasm">wasm</span>
+  </div>
+  <p>Cloudflare Workersはエッジで動作するサーバーレスプラットフォームです。世界中のデータセンターでコードが実行されるため、ユーザーに最も近い場所から高速にレスポンスを返せます。</p>
+  <h2>workers-rsの導入</h2>
+  <p><code>workers-rs</code> クレートを使うと、RustでCloudflare Workersのハンドラーを書けます。WASMにコンパイルされてV8のランタイム上で実行されます。</p>
+  <h2>Static Assetsとの組み合わせ</h2>
+  <p>Workers + Static Assetsを使うことで、静的ファイルの配信とWorkerの動的処理を一つのプロジェクトにまとめられます。ルーティングも柔軟に設定できます。</p>
+  <h2>デプロイ</h2>
+  <p>Cloudflare APIを直接叩くことで、CI/CDパイプラインなしでもコマンド一発でデプロイできます。WASMバイナリとstatic assetsを一括でアップロードします。</p>
+</article>

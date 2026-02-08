@@ -1,0 +1,16 @@
+{
+  "name": "every-fail-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx dev.ts",
+    "build": "esbuild src/main.ts --bundle --outdir=out --format=esm --minify"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.0"
+  }
+}

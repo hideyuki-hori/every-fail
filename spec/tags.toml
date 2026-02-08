@@ -1,0 +1,7 @@
+[colors]
+rust = "orange"
+webgpu = "blue"
+wasm = "purple"
+typescript = "cyan"
+design = "pink"
+performance = "red"

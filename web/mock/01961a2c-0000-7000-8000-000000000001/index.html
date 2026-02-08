@@ -1,0 +1,16 @@
+<article>
+  <h1>Rustで始めるWebAssembly入門</h1>
+  <time datetime="2025-06-01">2025-06-01</time>
+  <div class="tags">
+    <span class="tag" data-tag="rust">rust</span>
+    <span class="tag" data-tag="wasm">wasm</span>
+  </div>
+  <p>WebAssemblyはブラウザ上でネイティブに近いパフォーマンスを実現する技術です。Rustはそのコンパイルターゲットとして最も人気のある言語の一つです。</p>
+  <h2>環境構築</h2>
+  <p>まず <code>wasm-pack</code> をインストールします。これはRustのコードをWASMにコンパイルし、npmパッケージとして配布できる形にしてくれるツールです。</p>
+  <pre><code>cargo install wasm-pack</code></pre>
+  <h2>プロジェクト作成</h2>
+  <p><code>cargo new --lib</code> でライブラリプロジェクトを作成し、<code>Cargo.toml</code> に <code>crate-type = ["cdylib"]</code> を追加します。</p>
+  <h2>JavaScriptとの連携</h2>
+  <p><code>wasm-bindgen</code> を使うことで、RustとJavaScript間でシームレスにデータをやり取りできます。関数のエクスポートだけでなく、DOM操作やWeb APIの呼び出しも可能です。</p>
+</article>

@@ -1,0 +1,6 @@
+{
+  "title": "Cloudflare Workersで実現するエッジコンピューティング",
+  "date": "2025-06-15",
+  "description": "Cloudflare Workers上でRust WASMを動かし、エッジでの高速なレスポンスを実現する方法。",
+  "tags": ["rust", "wasm"]
+}

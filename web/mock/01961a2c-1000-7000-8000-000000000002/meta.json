@@ -1,0 +1,6 @@
+{
+  "title": "WebGPUで描くジェネラティブアート",
+  "date": "2025-06-08",
+  "description": "WebGPUのコンピュートシェーダーを使って、リアルタイムに生成されるビジュアルアートの作り方。",
+  "tags": ["webgpu", "typescript"]
+}

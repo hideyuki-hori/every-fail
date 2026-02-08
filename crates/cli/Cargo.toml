@@ -1,0 +1,27 @@
+[package]
+name = "ef"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "ef"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+pulldown-cmark = "0.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+sha2 = "0.10"
+glob = "0.3"
+notify = "7"
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["ws"] }
+uuid = { version = "1", features = ["v7"] }
+tokio-tungstenite = "0.26"
+futures-util = "0.3"
+tower-http = { version = "0.6", features = ["fs", "cors"] }
+anyhow = "1"
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "6"
