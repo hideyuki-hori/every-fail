@@ -18,7 +18,7 @@
 
 ```
 ef build
-  .pen        → CSS custom properties + web/generated/tokens.ts
+  spec/design.pen + spec/tags.toml → CSS custom properties + web/generated/tokens.ts
   Markdown    → HTML断片 + メタデータJSON
   Templates   + HTML断片 → SSG済みHTML (SEO用)
   TypeScript  → JS bundle (esbuild)
@@ -88,7 +88,9 @@ SEOにはページごとの完全なHTMLが必要だが、SPAでないとWebGPU�
 ```
 every-fail/
 ├── .gitignore
-├── design.pen              # design tokens マスターデータ (Pencil)
+├── spec/                   # デザイン仕様
+│   ├── design.pen          # カラーパレット マスターデータ (Pencil)
+│   └── tags.toml           # タグ → カラーファミリー対応
 ├── crates/
 │   ├── Cargo.toml          # ワークスペース
 │   ├── cli/                # ef コマンド
@@ -334,9 +336,10 @@ Options:
 
 ### ビルド処理フロー
 
-1. **design tokens抽出**: `design.pen`（JSON）をパース
-   - variables セクションから色・フォント等のトークンを抽出
-   - CSS custom properties を生成 → テンプレートに埋め込み
+1. **design tokens読み込み**: `spec/design.pen` + `spec/tags.toml` を読む
+   - design.pen の variables からカラーパレットを取得
+   - tags.toml からタグ→カラーファミリー対応を取得
+   - CSS custom properties を生成（パレット全色 + タグ展開）→ テンプレートに埋め込み
    - `web/generated/tokens.ts` を生成 → WebGPUで使用
 2. **記事パース**: `articles/{uuid-v7}/` を走査
    - `meta.toml` からメタデータ抽出
@@ -367,13 +370,93 @@ Options:
 web/ はフロントエンド単体で開発する。ef とは独立。
 
 ```bash
-cd web && pnpm dev    # esbuild watch + dev server (mock データ使用)
+cd web && pnpm dev    # esbuild watch + dev server + live reload
 cd web && pnpm build  # 本番ビルド → out/
 ```
 
-- `pnpm dev`: esbuild --serve で mock/ を servedir にして配信。SPA遷移やWebGPUの単体テストが可能
-- `pnpm build`: minify 済み JS を out/ に出力。ef build はこれを dist/assets/ にコピー
+- `pnpm dev`: esbuild watch + serve + SSE live reload。mock/ を servedir にして配信
+- `pnpm build`: minify 済み JS を out/ に出力
 - `mock/`: 10記事分の固定モックデータ (HTML断片 + メタデータJSON + 一覧HTML)。リポジトリにコミット
+
+### ef との境界
+
+web/ と ef の契約は `web/out/` ディレクトリのみ。
+
+```
+web/ 側                         ef 側
+─────────                       ─────────
+pnpm build                      ef build
+    │                               │
+    ▼                               │
+web/out/                            │
+  └── main.js  ◄────── コピー ──────┘  → dist/assets/
+```
+
+- ef は web/ の内部構造（TS, node_modules 等）を一切知らない
+- ef build は web/out/ の中身を dist/assets/ にコピーするだけ
+
+### 開発サーバー構成
+
+Vite 等のフレームワークツールは使わない。esbuild + 小さな SSE スクリプトで live reload を実現。
+
+```
+web/
+├── package.json        # esbuild のみ
+├── tsconfig.json
+├── dev.mjs             # esbuild watch + serve + SSE live reload
+├── main.ts             # エントリポイント
+├── router.ts           # クライアントルーター
+├── gpu/                # WebGPU (後回し)
+│   ├── renderer.ts
+│   └── shaders/
+├── ui/
+│   └── theme.ts
+├── generated/          # ef build が生成 (tokens.ts)
+├── mock/               # 開発用モックデータ
+│   ├── index.html      # SPAシェル兼一覧 (SSE client snippet 埋め込み)
+│   └── articles/       # 10記事分の HTML断片 + メタデータJSON
+└── out/                # pnpm build 出力 → ef がコピー
+```
+
+`dev.mjs` の仕組み:
+
+1. `esbuild.context()` で watch モード起動（TS変更 → 自動リビルド）
+2. `context.serve()` で `mock/` を servedir、ビルド出力を outdir として配信
+3. リビルド完了時に SSE で `reload` イベントをブラウザへ送信
+4. `mock/index.html` 内の小さなスクリプトが SSE を受けてページリロード
+
+### web/ 開発ステップ
+
+#### Step 1: プロジェクトセットアップ
+
+- web/package.json (esbuild のみ)
+- web/tsconfig.json
+- web/dev.mjs (esbuild watch + serve + SSE live reload)
+- `pnpm dev` で空ページが開ける状態にする
+
+#### Step 2: モックデータ + HTMLシェル
+
+- mock/index.html (SPAシェル + 記事一覧)
+- mock/articles/{uuid}.html (HTML断片 × 10記事)
+- mock/articles/{uuid}.json (メタデータJSON × 10記事)
+- ルーター開発前に表示確認できるデータを用意
+
+#### Step 3: ルーター + エントリポイント
+
+- router.ts (リンクインターセプト, pushState, popstate, fetch → DOM差し替え)
+- main.ts (ルーター初期化)
+- SPA遷移が動く状態
+
+#### Step 4: 最低限のCSS
+
+- コンテンツ中央寄せ (max-width: 768px)
+- 記事の読みやすいタイポグラフィ
+- デスクトップのみ（レスポンシブは後）
+
+#### Step 5: WebGPU (後回し)
+
+- gpu/renderer.ts + WGSL シェーダー
+- canvas 背景の常時描画
 
 ### クライアントルーター (`web/router.ts`)
 
@@ -420,15 +503,67 @@ Workers + Static Assets で静的配信と動的処理を一本化。
 
 ## Design Tokens
 
+### 責務の分離
+
+| 何を定義するか | どこで | 変更頻度 |
+|---------------|--------|---------|
+| カラーパレット（どんな色があるか） | `spec/design.pen` | 低（デザイン確定後ほぼ変わらない） |
+| タグ → カラーファミリー対応 | `spec/tags.toml` | 中（新タグ追加時に1行追加） |
+| レベル → UI要素の使用ルール | CSS | 低（デザインルール確定後ほぼ変わらない） |
+
 ### マスターデータ
 
-`design.pen`（Pencil で管理）が単一ソース。実体はJSONで、Rust CLI が直接パースする。
+`spec/design.pen`（Pencil で管理）がカラーパレットの単一ソース。
 
-### 生成物
+9色のカラーファミリー × 11段階 (50〜950) = 99色トークン:
+gray, green, red, blue, yellow, purple, orange, pink, cyan
+
+Rust CLI が `design.pen` を直接パースする（実体はJSON、`variables` セクションを読むだけ）。
+
+### spec/tags.toml
+
+タグとカラーファミリーの対応。新しいタグは1行追加するだけ。
+
+```toml
+[colors]
+rust = "orange"
+webgpu = "blue"
+wasm = "purple"
+typescript = "cyan"
+design = "pink"
+performance = "red"
+```
+
+### タグカラーの使用ルール
+
+レベルとUI要素の対応は CSS で一箇所に定義する。
+
+| UI要素 | レベル | 用途 |
+|--------|--------|------|
+| タグバッジ背景 | 100 | 薄い背景 |
+| タグバッジ文字 | 700 | 読みやすい文字 |
+| 記事アクセント | 500 | ボーダー、リンク色 |
+| ホバー背景 | 50 | 控えめなハイライト |
+
+```css
+[data-tag="rust"] {
+  --tag-50: var(--orange-50);
+  --tag-100: var(--orange-100);
+  --tag-500: var(--orange-500);
+  --tag-700: var(--orange-700);
+}
+
+.tag-badge { background: var(--tag-100); color: var(--tag-700); }
+.post-accent { border-left-color: var(--tag-500); }
+```
+
+### ビルド時の生成物
+
+`ef build` は `spec/design.pen` + `spec/tags.toml` を読み、以下を生成する:
 
 | 生成先 | 用途 |
 |--------|------|
-| CSS custom properties | HTMLテンプレートに埋め込み、UIスタイリング |
+| CSS custom properties | パレット全色 (`--red-100` 等) + タグ展開 (`[data-tag]`) |
 | `web/generated/tokens.ts` | WebGPUシェーダーへの色渡し、TS側のテーマ参照 |
 
 ### 生成される tokens.ts の例
@@ -442,6 +577,13 @@ export const colors = {
 ```
 
 WebGPU シェーダーには `vec4<f32>` として渡せる形式で出力。
+
+### トークン更新ワークフロー
+
+```
+1. spec/design.pen を Pencil で編集（カラーパレット変更）
+2. ef build で CSS custom properties + tokens.ts が再生成される
+```
 
 ---
 
@@ -517,7 +659,7 @@ Done: https://every.fail
 
 - [ ] `ef build`: フルビルド
 - [ ] `ef build`: 差分ビルド (マニフェスト + SHA-256 比較)
-- [ ] `ef build`: design tokens 抽出 (.pen → CSS custom properties + web/generated/tokens.ts)
+- [ ] `ef build`: design tokens 読み込み (spec/design.pen + spec/tags.toml → CSS custom properties + web/generated/tokens.ts)
 - [ ] `ef build`: meta.toml パース
 - [ ] `ef build`: Markdown → HTML 変換 (pulldown-cmark)
 - [ ] `ef build`: 画像等アセットのコピー
@@ -572,12 +714,16 @@ Done: https://every.fail
 - [ ] OGP画像の動的生成
 - [ ] APIエンドポイント (将来拡張用)
 
+### デザイン仕様 (spec/)
+
+- [ ] spec/design.pen (Pencil でカラーパレット管理)
+- [ ] spec/tags.toml (タグ → カラーファミリー対応)
+
 ### インフラ / 設定
 
 - [ ] crates/Cargo.toml ワークスペース設定
 - [ ] web/package.json (esbuild)
 - [ ] ~/.config/ef/main.toml
-- [ ] design.pen (Pencil でトークン管理)
 
 ---
 
@@ -585,6 +731,7 @@ Done: https://every.fail
 
 ### Phase 0: 開発環境構築
 
+- spec/ ディレクトリ (design.pen, tags.toml)
 - crates/ ワークスペース (Cargo.toml)
 - crates/cli/ スキャフォールド
 - crates/worker/ スキャフォールド
