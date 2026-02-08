@@ -4,3 +4,4 @@ node_modules/
 web/out/
 .DS_Store
 .manifest.json
+.wrangler/

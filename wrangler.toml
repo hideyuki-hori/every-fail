@@ -1,6 +1,9 @@
 name = "every-fail"
-main = "worker.ts"
-compatibility_date = "2025-01-01"
+main = "crates/worker/build/worker/shim.mjs"
+compatibility_date = "2026-02-01"
+
+[build]
+command = "cd crates/worker && cargo install -q worker-build && worker-build --release"
 
 [assets]
 directory = "dist"

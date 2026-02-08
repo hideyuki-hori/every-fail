@@ -10,7 +10,7 @@ const ctx = await esbuild.context({
 
 await ctx.watch()
 
-const { host, port } = await ctx.serve({
+const { port } = await ctx.serve({
   servedir: 'mock',
 })
 
