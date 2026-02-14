@@ -1,5 +1,0 @@
-title = "every.fail を作り始めた"
-date = 2025-01-01
-description = "WebGPU背景が動き続けるブログシステムを構想する"
-tags = ["rust", "webgpu"]
-draft = false
