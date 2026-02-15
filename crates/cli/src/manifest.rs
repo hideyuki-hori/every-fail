@@ -10,15 +10,15 @@ pub struct Manifest {
 }
 
 impl Manifest {
-    pub fn load(dist_dir: &Path) -> Result<Self> {
-        let path = dist_dir.join(".manifest.json");
-        if path.exists() {
-            let content = std::fs::read_to_string(&path)?;
-            Ok(serde_json::from_str(&content)?)
-        } else {
-            Ok(Self::default())
-        }
-    }
+    // pub fn load(dist_dir: &Path) -> Result<Self> {
+    //     let path = dist_dir.join(".manifest.json");
+    //     if path.exists() {
+    //         let content = std::fs::read_to_string(&path)?;
+    //         Ok(serde_json::from_str(&content)?)
+    //     } else {
+    //         Ok(Self::default())
+    //     }
+    // }
 
     pub fn save(&self, dist_dir: &Path) -> Result<()> {
         let path = dist_dir.join(".manifest.json");

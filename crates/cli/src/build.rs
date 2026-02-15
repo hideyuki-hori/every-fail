@@ -55,6 +55,8 @@ pub fn run(project_dir: &Path) -> Result<()> {
     let index_template = std::fs::read_to_string(templates_dir.join("index.html"))
         .context("Failed to read templates/index.html")?;
 
+    let js_file = read_js_filename(project_dir);
+
     let mut articles = Vec::new();
 
     if articles_dir.exists() {
@@ -163,6 +165,7 @@ pub fn run(project_dir: &Path) -> Result<()> {
         shell_vars.insert("title", format!("{} | every.fail", article.meta.title));
         shell_vars.insert("content", post_content);
         shell_vars.insert("head", post_style.to_string());
+        shell_vars.insert("js_file", js_file.clone());
 
         let full_html = template::render(&shell_template, &shell_vars);
 
@@ -196,6 +199,7 @@ pub fn run(project_dir: &Path) -> Result<()> {
     shell_vars.insert("title", "every.fail".to_string());
     shell_vars.insert("content", index_content);
     shell_vars.insert("head", index_style.to_string());
+    shell_vars.insert("js_file", js_file.clone());
     let index_html = template::render(&shell_template, &shell_vars);
     std::fs::write(dist_dir.join("index.html"), &index_html)?;
     manifest.record("index.html", index_html.as_bytes());
@@ -262,6 +266,21 @@ fn build_article_list_html(articles: &[Article]) -> String {
         ));
     }
     html
+}
+
+fn read_js_filename(project_dir: &Path) -> String {
+    let manifest_path = project_dir
+        .join("web")
+        .join("out")
+        .join("manifest.json");
+    if let Ok(content) = std::fs::read_to_string(&manifest_path) {
+        if let Ok(manifest) = serde_json::from_str::<HashMap<String, String>>(&content) {
+            if let Some(filename) = manifest.get("main.js") {
+                return filename.clone();
+            }
+        }
+    }
+    "main.js".to_string()
 }
 
 fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {

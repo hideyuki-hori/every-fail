@@ -4,13 +4,20 @@
   "type": "module",
   "scripts": {
     "dev": "tsx dev.ts",
-    "build": "esbuild src/main.ts --bundle --outdir=out --format=esm --minify"
+    "build": "tsx build.ts"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "devDependencies": {
+    "@types/node": "^25.2.3",
     "esbuild": "^0.25.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "effect": "^3.19.17"
   }
 }
