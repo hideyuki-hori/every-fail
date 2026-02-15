@@ -2,5 +2,7 @@ dist/
 target/
 node_modules/
 web/out/
+web/mock/assets/main.js
+web/mock/assets/main.js.map
 .DS_Store
 .manifest.json
