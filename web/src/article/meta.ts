@@ -1,4 +1,6 @@
-export interface ArticleMeta {
-  readonly title: string
-  readonly description: string
-}
+import { Schema } from 'effect'
+
+export class ArticleMeta extends Schema.Class<ArticleMeta>('ArticleMeta')({
+  title: Schema.String,
+  description: Schema.String,
+}) {}
