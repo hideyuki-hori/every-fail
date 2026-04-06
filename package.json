@@ -1,18 +1,9 @@
 {
   "name": "every-fail",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "typescript": "~6.0.2",
-    "vite": "^8.0.4"
-  },
-  "dependencies": {
-    "effect": "^3.21.0"
+    "dev:site": "pnpm --filter @every-fail/site dev",
+    "dev:worker": "pnpm --filter @every-fail/worker dev",
+    "build": "pnpm -r build"
   }
 }

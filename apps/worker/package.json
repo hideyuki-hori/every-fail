@@ -1,0 +1,17 @@
+{
+  "name": "@every-fail/worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250407.0",
+    "typescript": "~6.0.2",
+    "wrangler": "^4.14.0"
+  },
+  "dependencies": {
+    "@every-fail/schema": "workspace:*"
+  }
+}
