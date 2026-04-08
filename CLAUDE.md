@@ -47,6 +47,21 @@ monorepoはpnpm workspaceで管理する。
 - ef dot dev -- ブログ開発
 - ef dot build -- 今のdotフォルダの内容をbuild
 - ef dot deploy -- 今のdotフォルダの内容をdeploy
+- ef dots migrate -- 全dotリポジトリに対してcodemodeを実行する
+
+## dot-sdk
+
+- packages/dot-sdkとして管理する。npmには公開しない。
+- DotContext、Meta、Unmount等の型定義を提供する。
+- 各dotリポジトリはdevDependenciesにgit+ssh:でdot-sdkを参照する。
+- ef dot newがテンプレート生成時にこの依存設定を自動生成する。
+- every-fail側でAPIが変わると全dotリポジトリでtscエラーが出る。
+
+## dotリポジトリ管理
+
+- dotは別リポジトリで管理する。
+- every-fail側にdotリポジトリの一覧（git URL等）を管理するファイルを持つ。
+- ef dots migrateは一覧をもとに全dotをclone/pullし、codemod（ts-morph等でAST変換）を実行し、型チェックを通し、PRを自動作成する。
 
 ## メタデータ仕様 (Meta)
 
@@ -58,7 +73,7 @@ type Meta = {
   tags: string[]
   createdAt: string   // ISO 8601
   updatedAt: string   // ISO 8601
-  status: "draft" | "published"
+  status: 'draft' | 'published'
   ogImage: string     // OGP画像パス (dot内の相対パス)
 }
 ```
