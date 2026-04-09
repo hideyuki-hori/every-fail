@@ -10,7 +10,7 @@ export class ContentReplacer extends Context.Tag('ContentReplacer')<
 export const ContentReplacerLive = Layer.effect(
   ContentReplacer,
   Effect.gen(function* () {
-    const content = yield* querySelector('.context')
+    const content = yield* querySelector('.content')
     const parse = yield* HtmlParser
     return (s: string) =>
       Effect.sync(() => {
