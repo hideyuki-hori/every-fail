@@ -1,6 +1,6 @@
-import { Effect, Context, Layer } from 'effect'
-import { querySelector } from './query-selector'
+import { Context, Effect, Layer } from 'effect'
 import { HtmlParser } from './html-parser'
+import { querySelector } from './query-selector'
 
 export class ContentReplacer extends Context.Tag('ContentReplacer')<
   ContentReplacer,
@@ -12,9 +12,10 @@ export const ContentReplacerLive = Layer.effect(
   Effect.gen(function* () {
     const content = yield* querySelector('.context')
     const parse = yield* HtmlParser
-    return (s: string) => Effect.sync(() => {
-      const nodes = parse(s)
-      content.replaceChildren(...nodes)
-    })
+    return (s: string) =>
+      Effect.sync(() => {
+        const nodes = parse(s)
+        content.replaceChildren(...nodes)
+      })
   })
 )

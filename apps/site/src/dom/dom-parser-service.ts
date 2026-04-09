@@ -5,4 +5,7 @@ export class DOMParserService extends Context.Tag('DomParser')<
   DOMParser
 >() {}
 
-export const DOMParserServiceLive = Layer.succeed(DOMParserService, new DOMParser())
+export const DOMParserServiceLive = Layer.succeed(
+  DOMParserService,
+  new DOMParser()
+)

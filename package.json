@@ -4,6 +4,12 @@
   "scripts": {
     "dev:site": "pnpm --filter @every-fail/site dev",
     "dev:worker": "pnpm --filter @every-fail/worker dev",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "format": "biome format --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.10"
   }
 }

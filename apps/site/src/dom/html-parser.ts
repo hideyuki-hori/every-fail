@@ -14,5 +14,5 @@ export const HtmlParserLive = Layer.effect(
       const doc = parser.parseFromString(html, 'text/html')
       return Array.from(doc.body.childNodes)
     }
-  }),
+  })
 )
