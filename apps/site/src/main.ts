@@ -5,7 +5,7 @@ import { DocumentServiceLive } from './dom/document-service'
 import { DOMParserServiceLive } from './dom/dom-parser-service'
 import { HtmlParserLive } from './dom/html-parser'
 import { querySelector } from './dom/query-selector'
-import { SucceedOnly } from './http/clients'
+import { OkOnlyHttpClientLive } from './http/clients'
 import { downloadHtml } from './http/download-html'
 import './styles/index.css'
 
@@ -13,7 +13,7 @@ const MainLive = ContentReplacerLive.pipe(
   Layer.provide(HtmlParserLive),
   Layer.provide(DOMParserServiceLive),
   Layer.provideMerge(DocumentServiceLive),
-  Layer.merge(SucceedOnly),
+  Layer.merge(OkOnlyHttpClientLive),
   Layer.merge(ConfigProviderLive)
 )
 
