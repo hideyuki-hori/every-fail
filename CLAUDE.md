@@ -1,14 +1,20 @@
 # 概要
 
 個人ブログを以下の構成で作る。
+
+## 依存方針
+
+- ランタイム `dependencies` は 0。ランタイムライブラリに依存しない。
+- `devDependencies` のみ使用する(vite, typescript, vitest, biome 等)。
+- セキュリティ要件などでランタイム依存が必要になった場合は個別に議論する。
+
+## 参考ドキュメント
+
 llms.txtは各技術について初回の技術的質問があった時点でDownloadすること。デフォルトは通常版を使用し、詳細が必要な場合のみfull版を使用する。
 
 - vite
   - デフォルト: https://vite.dev/llms.txt
   - 詳細が必要な場合: https://vite.dev/llms-full.txt
-- Effect.ts
-  - デフォルト: https://effect.website/llms.txt
-  - 詳細が必要な場合: https://effect.website/llms-full.txt
 - Cloudflare
   - デフォルト: https://developers.cloudflare.com/workers/llms.txt
   - 詳細が必要な場合: https://developers.cloudflare.com/workers/llms-full.txt
@@ -18,11 +24,11 @@ llms.txtは各技術について初回の技術的質問があった時点でDow
 monorepoはpnpm workspaceで管理する。
 
 - apps
-  - cli: ef コマンド。ビルド・デプロイ・記事管理を行う。Effect.tsを使用する。
-  - site: ブラウザで動作する。Effect.tsを使用する。
-  - worker: Cloudflare Workerで動作する。Effect.tsを使用しない。ライブラリは使用しない(セキュリティ要件があれば使用する)。packages/schemaは参照しない。worker内で必要な型は独自に定義する。
+  - cli: ef コマンド。ビルド・デプロイ・記事管理を行う。Node標準API(node:util の parseArgs 等)のみを使用する。
+  - site: ブラウザで動作する。標準 DOM API / Web API のみを使用する。
+  - worker: Cloudflare Workerで動作する。ライブラリは使用しない(セキュリティ要件があれば使用する)。packages/schemaは参照しない。worker内で必要な型は独自に定義する。
 - packages
-  - schema: Effect.ts Schemaで定義する。siteとcliが使用する。workerは使用しない。
+  - schema: TypeScript 型定義のみ。ランタイムバリデーションは行わない。siteとcliが使用する。workerは使用しない。
   - その他あれば順次追加する
 - dots
   - dot-001: ブログ記事1
@@ -140,8 +146,7 @@ workerはブラウザからのアクセス(https://every.fail/xx)かapi経由の
 ### 描画ループ
 
 - requestAnimationFrameはシェルが実行する
-- 各dot・各機能はEffect.tsのpub/subを介してフレームごとの処理を登録する
-- 依存性はEffect.Layerで解決する
+- 各dot・各機能がフレームごとの処理を登録する仕組みは未定(pub/sub方式、DI方法ともに要検討)
 
 ### dot遷移とトランジション
 
@@ -156,7 +161,7 @@ workerはブラウザからのアクセス(https://every.fail/xx)かapi経由の
 
 ### ライフサイクル
 
-- 各dotのmount/unmountはEffectを返す方針。詳細は未定。
+- 各dotのmount/unmountの詳細は未定
 
 ### WebGPU非対応時
 
@@ -183,7 +188,6 @@ workerはブラウザからのアクセス(https://every.fail/xx)かapi経由の
 
 ### やるべきこと
 
-- Effectを使用する箇所では最もEffectらしい実装を最優先にする。
 - 根拠を示す。「こうすべき」と言うなら、なぜそうなのかを必ず添える
 - 非推奨・deprecated・experimentalなAPIは明示する
 - 知らない・確信がない場合は正直にそう言う。推測で断定しない
@@ -200,9 +204,11 @@ workerはブラウザからのアクセス(https://every.fail/xx)かapi経由の
 
 - anyを提案しない
 - as型アサーションを提案しない
-- Effect.tsを使用するレイヤー(site, cli)でPromiseベースの提案をしない
+- ランタイム `dependencies` の追加を提案しない(セキュリティ要件などで必要な場合はその旨を明示する)
 
 ### コンテキストに応じた提案
 
-- apps/site, apps/cli: Effect.tsのパターンを前提とする。Promiseベースの提案はしない
-- apps/worker: 素のWeb標準APIを前提とする。Effect.tsのパターンを持ち込まない
+- apps/site: 標準 DOM API / Web API のみを前提とする
+- apps/cli: Node 標準 API のみを前提とする。引数パースは `node:util` の `parseArgs`
+- apps/worker: 素のWeb標準APIを前提とする
+- packages/schema: TypeScript 型定義のみ。ランタイム値を扱わない
