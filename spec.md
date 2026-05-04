@@ -23,16 +23,18 @@ monorepo は pnpm workspace で管理する。
   - web: web ブラウザで表示するもの
   - dot-sdk: 別 repo などで使用する dot の sdk
 - packages
-  - core: 基本ユーティリティ + pub/sub + 共通型
   - design: design-token (`token('key')` で色コード等を取得)
   - dom: DOM 操作の wrapper
   - router: router 機能 (web / server 両方で使う)
   - gpu: WebGPU の wrapper
+- core: 基本ユーティリティ + pub/sub + 共通型 (packages の外、独立した最下層)
 - dots: ブログ記事(別リポジトリで管理されるケースもある)
+
+依存方向: `apps → packages → core` (ディレクトリ階層と一致)
 
 ## packages のルール
 
-- packages 同士は依存禁止。ただし `core` は例外で他 packages から依存可能。
+- packages 同士は依存禁止。`core` のみ依存可能。
 - 公開 API は `index.ts` の export のみ。`package.json` の `exports` フィールドで強制する:
 
 ```json
@@ -61,6 +63,17 @@ monorepo は pnpm workspace で管理する。
 - worker 側の専用アクションも定義可能
   - TODO: 実装方法を考える
 
+## 型 (dot-sdk が提供)
+
+```ts
+type DotContext = {
+  root: HTMLElement
+}
+type Unmount = () => void
+```
+
+- 最小から始める。GPU / RAF / Router 等は必要になったら追加。
+
 ## Meta
 
 ```ts
@@ -86,6 +99,21 @@ type Meta = {
 # URL 設計
 
 - `/dots/<id>` (id は Meta.id = NanoID 8文字)
+- `/dots?q=<keyword>&tag=<tag>` (検索 query 付き、ブラウザ向け)
+- `/api/search?q=<keyword>&tag=<tag>` (Worker API、検索結果 JSON を返す)
+
+# SSG / 動的の方針
+
+- 静的ページ (`/`, `/about`, `/dots` デフォルト, `/dots/<id>`, `/404`): 全 SSG → KV / R2 から配信
+- 検索 (query 付き `/dots?q=...`): Worker → D1 → 結果 JSON → client 側で描画
+- 検索結果ページ自体は SSR しない (SEO 流入は想定しない)
+
+# 検索バックエンド
+
+- Cloudflare D1 (SQLite ベース)
+- 検索範囲(現時点): タイトル + tags + description
+- 将来 SQLite FTS5 で本文全文検索を追加する余地を残す
+- 正本は各 dot の meta.ts、D1 はビルド時に流し込む派生物
 
 # dot リポジトリ
 
@@ -123,8 +151,11 @@ ef dots migrate   全 dot リポジトリに対して codemod を実行する
 # ビルド
 
 - TODO: content.html / full.html の生成方針
-- TODO: 保存先 (KV / R2 のどちらにするか)
+- 保存先:
+  - HTML (content.html / full.html): KV
+  - assets (画像 / shader / 動画など): R2
 - TODO: アセット管理(dot 内のファイルを自動収集する仕組み)
+- TODO: D1 への meta 流し込み (ビルド時)
 
 # ブラウザ動作
 
