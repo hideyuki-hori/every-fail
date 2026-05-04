@@ -1,5 +1,5 @@
 {
-  "name": "@every-fail/site",
+  "name": "@every-fail/web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,6 +14,6 @@
     "vite": "^8.0.4"
   },
   "dependencies": {
-    "@every-fail/schema": "workspace:*"
+    "@every-fail/core": "workspace:*"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@every-fail/worker",
+  "name": "@every-fail/server",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,6 +12,6 @@
     "wrangler": "^4.14.0"
   },
   "dependencies": {
-    "@every-fail/schema": "workspace:*"
+    "@every-fail/core": "workspace:*"
   }
 }

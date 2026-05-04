@@ -2,8 +2,8 @@
   "name": "every-fail",
   "private": true,
   "scripts": {
-    "dev:site": "pnpm --filter @every-fail/site dev",
-    "dev:worker": "pnpm --filter @every-fail/worker dev",
+    "dev:web": "pnpm --filter @every-fail/web dev",
+    "dev:server": "pnpm --filter @every-fail/server dev",
     "build": "pnpm -r build",
     "lint": "biome check",
     "lint:fix": "biome check --write",

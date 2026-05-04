@@ -12,11 +12,7 @@ importers:
         specifier: ^2.4.10
         version: 2.4.10
 
-  apps/site:
-    dependencies:
-      '@every-fail/schema':
-        specifier: workspace:*
-        version: link:../../packages/schema
+  apps/cli:
     devDependencies:
       '@types/node':
         specifier: ^25.5.2
@@ -24,15 +20,18 @@ importers:
       typescript:
         specifier: ~6.0.2
         version: 6.0.2
-      vite:
-        specifier: ^8.0.4
-        version: 8.0.5(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0)
 
-  apps/worker:
+  apps/dot-sdk:
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
+  apps/server:
     dependencies:
-      '@every-fail/schema':
+      '@every-fail/core':
         specifier: workspace:*
-        version: link:../../packages/schema
+        version: link:../../core
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250407.0
@@ -44,7 +43,63 @@ importers:
         specifier: ^4.14.0
         version: 4.80.0(@cloudflare/workers-types@4.20260405.1)
 
-  packages/schema:
+  apps/web:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.2
+        version: 25.5.2
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+      vite:
+        specifier: ^8.0.4
+        version: 8.0.5(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0)
+
+  core:
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
+  packages/design:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
+  packages/dom:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
+  packages/gpu:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
+  packages/router:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../../core
     devDependencies:
       typescript:
         specifier: ~6.0.2
