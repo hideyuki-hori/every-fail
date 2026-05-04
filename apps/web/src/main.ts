@@ -1,6 +1,9 @@
 import './styles/index.css'
+import { onRoute } from './router'
 
 const main = document.querySelector<HTMLElement>('main.content')
 if (main) {
-  main.textContent = 'every.fail'
+  onRoute(pathname => {
+    main.textContent = pathname
+  })
 }
