@@ -22,6 +22,10 @@ importers:
         version: 6.0.2
 
   apps/dot-sdk:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../../core
     devDependencies:
       typescript:
         specifier: ~6.0.2
@@ -64,6 +68,12 @@ importers:
       typescript:
         specifier: ~6.0.2
         version: 6.0.2
+
+  dots/2026-05-05-hello:
+    devDependencies:
+      '@every-fail/dot-sdk':
+        specifier: workspace:*
+        version: link:../../apps/dot-sdk
 
   packages/design:
     dependencies:
