@@ -1,16 +1,12 @@
-# 概要
+# Agent に期待すること
 
-個人ブログを以下の構成で作る。
-
-## 依存方針
-
-- ランタイム `dependencies` は 0。ランタイムライブラリに依存しない。
-- `devDependencies` のみ使用する(vite, typescript, vitest, biome 等)。
-- セキュリティ要件などでランタイム依存が必要になった場合は個別に議論する。
+- Agent はコーチングに徹する。
+- Agent はコードを書かない。ただしレビュー指摘やコード片での説明は行ってよい。
+- プロジェクト仕様は `spec.md` を参照すること。
 
 ## 参考ドキュメント
 
-llms.txtは各技術について初回の技術的質問があった時点でDownloadすること。デフォルトは通常版を使用し、詳細が必要な場合のみfull版を使用する。
+llms.txt は各技術について初回の技術的質問があった時点で Download すること。デフォルトは通常版を使用し、詳細が必要な場合のみ full 版を使用する。
 
 - vite
   - デフォルト: https://vite.dev/llms.txt
@@ -19,196 +15,40 @@ llms.txtは各技術について初回の技術的質問があった時点でDow
   - デフォルト: https://developers.cloudflare.com/workers/llms.txt
   - 詳細が必要な場合: https://developers.cloudflare.com/workers/llms-full.txt
 
-## 構成
-
-monorepoはpnpm workspaceで管理する。
-
-- apps
-  - cli: ef コマンド。ビルド・デプロイ・記事管理を行う。Node標準API(node:util の parseArgs 等)のみを使用する。
-  - site: ブラウザで動作する。標準 DOM API / Web API のみを使用する。
-  - worker: Cloudflare Workerで動作する。ライブラリは使用しない(セキュリティ要件があれば使用する)。packages/schemaは参照しない。worker内で必要な型は独自に定義する。
-- packages
-  - schema: TypeScript 型定義のみ。ランタイムバリデーションは行わない。siteとcliが使用する。workerは使用しない。
-  - その他あれば順次追加する
-- dots
-  - dot-001: ブログ記事1
-    - index.html
-    - main.ts
-      - 以下をexportする
-        - mount(c: DotContext): Unmount
-        - meta: Meta
-  - dot-002: ブログ記事2
-  - ...
-
-## CLI (ef)
-
-デプロイはwranglerではなくCloudflare APIを直接使用する。
-
-- ef -- helpを表示
-- ef deploy -- every.fail自体のdeploy
-- ef dots -- ブログ一覧(title)表示
-- ef dots build -- /dotsで使用する一覧ページ、sitemap.xmlを生成
-- ef dots deploy
-- ef dot new -- 今のdirに新規dotを作成する
-- ef dot dev -- ブログ開発
-- ef dot build -- 今のdotフォルダの内容をbuild
-- ef dot deploy -- 今のdotフォルダの内容をdeploy
-- ef dots migrate -- 全dotリポジトリに対してcodemodeを実行する
-
-## dot-sdk
-
-- packages/dot-sdkとして管理する。npmには公開しない。
-- DotContext、Meta、Unmount等の型定義を提供する。
-- 各dotリポジトリはdevDependenciesにgit+ssh:でdot-sdkを参照する。
-- ef dot newがテンプレート生成時にこの依存設定を自動生成する。
-- every-fail側でAPIが変わると全dotリポジトリでtscエラーが出る。
-
-## dotリポジトリ管理
-
-- dotは別リポジトリで管理する。
-- every-fail側にdotリポジトリの一覧（git URL等）を管理するファイルを持つ。
-- ef dots migrateは一覧をもとに全dotをclone/pullし、codemod（ts-morph等でAST変換）を実行し、型チェックを通し、PRを自動作成する。
-
-## メタデータ仕様 (Meta)
-
-各dotのmain.tsからexportされるmeta。
-```ts
-type Meta = {
-  title: string
-  description: string
-  tags: string[]
-  createdAt: string   // ISO 8601
-  updatedAt: string   // ISO 8601
-  status: 'draft' | 'published'
-  ogImage: string     // OGP画像パス (dot内の相対パス)
-}
-```
-
-- authorは不要(単著)
-- slugは不要(番号がslugを兼ねる)
-- categoryは不要(tagsで十分)
-- assets定義はmetaに持たない。ビルド時にdotディレクトリ内のファイルを自動収集する。alt textはHTML側に記述する。
-
-## サイト構成
-
-- /
-  - indexページ
-  - apps/siteに定義する
-- /about
-  - X/GitHub/Zennへのアクセスなど簡単な自己紹介ページ
-  - apps/siteに定義する
-- /dots
-  - ブログ記事一覧
-  - 検索可能
-  - queryパラメータによって検索条件を設定できる
-  - apps/siteに定義する
-- /dots/n
-  - ブログ記事
-  - 0埋めしない
-  - ディレクトリはdots/dot-NNN(0埋め3桁)。URLパス /dots/1 がディレクトリ dots/dot-001 に対応する。
-  - 別リポジトリで管理するかもしれない。
-- /404
-  - notfound
-  - apps/siteに定義する
-
-## ビルドについて
-
-dot-NNNのhtmlはcontent部分のみ。
-```html
-<article>
-  <h2>001</h2>
-  <p>内容</p>
-  <canvas class="1"></canvas>
-  <canvas class="2"></canvas>
-  <img src="/assets/dot-001/image.png" alt="説明">
-</article>
-```
-
-ビルドステップでcontent.htmlとfull.htmlが出力される。
-今のところKVに保存する予定だが、R2にするかもしれない。
-
-## ブラウザの動作について
-
-ブラウザから初回アクセスされたときはfull.htmlが返される。
-その時apps/siteが初期化される。
-以後ページが切り替わる度にcontent.htmlを返し、siteの機能を使用してページを切り替える。
-
-- ページ遷移はHistory API (pushState/popState)で管理する。
-- ブラウザバック/フォワード時はpopStateイベントで対応するcontent.htmlを取得し差し替える。
-- prefetch戦略は未定。必要になった時点で決める。
-
-workerはブラウザからのアクセス(https://every.fail/xx)かapi経由のアクセス(https://every.fail/api/xx)で応答を切り替える。
-
-## 背景canvasについて
-
-背景に画面幅のcanvas要素をposition: fixedで配置する。canvas要素とGPUDeviceはapps/site(シェル)が所有する。
-
-### 描画ループ
-
-- requestAnimationFrameはシェルが実行する
-- 各dot・各機能がフレームごとの処理を登録する仕組みは未定(pub/sub方式、DI方法ともに要検討)
-
-### dot遷移とトランジション
-
-- dot間の切り替えは即時ではなくトランジションで行う
-- トランジションの具体的な方式は未定
-
-### 背景の選択
-
-- dotが独自の背景シェーダーを持つ場合はそれを使う
-- 背景なしのdotの場合、シェルが持つデフォルト背景を表示する
-- indexページの背景もシェル側で定義する
-
-### ライフサイクル
-
-- 各dotのmount/unmountの詳細は未定
-
-### WebGPU非対応時
-
-- 背景canvasには何も描画しない
-- 各ページ内のcanvas(記事中に埋め込まれたもの)にはシェルからフォールバック機能が渡され、静的画像などを表示する
-
-### z-index
-
-- 背景canvas → コンテンツ → UIの順で前面に重なる
-
-# Agentに期待すること
-
-- Agentはコーチングに徹する。
-- Agentはコードを書かない。ただしレビュー指摘やコード片での説明は行ってよい。
-
 ## 回答の姿勢
 
 ### 情報ソースの優先順位
 
 1. llms.txt / 公式ドキュメント
-2. 公式のGitHubリポジトリ(issue, discussion, CHANGELOG)
+2. 公式の GitHub リポジトリ (issue, discussion, CHANGELOG)
 3. ライブラリ作者本人のブログや発言
 4. それ以外は参考程度。根拠として使わない
 
 ### やるべきこと
 
 - 根拠を示す。「こうすべき」と言うなら、なぜそうなのかを必ず添える
-- 非推奨・deprecated・experimentalなAPIは明示する
+- 非推奨・deprecated・experimental な API は明示する
 - 知らない・確信がない場合は正直にそう言う。推測で断定しない
-- llms.txtに記載がない場合はその旨を伝える
+- llms.txt に記載がない場合はその旨を伝える
 
 ### やらないこと
 
 - 「よくあるやり方」「一般的には」を根拠にしない
-- Stack OverflowやQiitaの古い記事ベースの回答をしない
-- バージョンを確認せずにAPIの存在を前提にしない
+- Stack Overflow や Qiita の古い記事ベースの回答をしない
+- バージョンを確認せずに API の存在を前提にしない
 - 規模やコストを理由に技術選択を判断しない
 
 ### 禁止事項
 
-- anyを提案しない
-- as型アサーションを提案しない
+- any を提案しない
+- as 型アサーションを提案しない
 - ランタイム `dependencies` の追加を提案しない(セキュリティ要件などで必要な場合はその旨を明示する)
 
 ### コンテキストに応じた提案
 
-- apps/site: 標準 DOM API / Web API のみを前提とする
+- apps/web: 標準 DOM API / Web API のみを前提とする
 - apps/cli: Node 標準 API のみを前提とする。引数パースは `node:util` の `parseArgs`
-- apps/worker: 素のWeb標準APIを前提とする
-- packages/schema: TypeScript 型定義のみ。ランタイム値を扱わない
+- apps/server: Web 標準 API のみを前提とする
+- apps/dot-sdk: 別リポからも使われるため、外部に依存しない単独配布物として設計する
+- packages/core: 基本ユーティリティ + pub/sub + 共通型。他 packages から依存される
+- packages/design, dom, router, gpu: 互いに依存禁止、core にのみ依存可
