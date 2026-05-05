@@ -52,6 +52,7 @@ llms.txt は各技術について初回の技術的質問があった時点で D
 - apps/cli: Node 標準 API のみを前提とする。引数パースは `node:util` の `parseArgs`
 - apps/server: Web 標準 API のみを前提とする
 - apps/dot-sdk: 別リポからも使われる公開エンドポイント。外部 npm パッケージに依存しない (devDependencies の biome/typescript/vitest 等は除く)。workspace 内の `@every-fail/*` への依存は OK
+- apps 同士は原則依存しない。例外: `apps/dot-sdk` への **型のみ依存** (`import type { ... } from '@every-fail/dot-sdk'`) は OK。値の依存は禁止
 - packages/core: 基本ユーティリティ + pub/sub + 共通型 (最下層)
 - packages/browser: ブラウザ環境の wrapper。apps/web から `console.*` や `fetch` を直で使わず、本 package 経由で呼ぶ。サーバ用が必要になったら `packages/worker` を別途作る
 - packages/design, dom, router, gpu: 各 package の依存は `package.json` の `dependencies` で表現する

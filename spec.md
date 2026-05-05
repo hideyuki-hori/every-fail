@@ -34,6 +34,14 @@ monorepo は pnpm workspace で管理する。
 
 依存方向: `apps → packages` (ディレクトリ階層と一致)。packages 内部の依存方向 (例: `dom → core`) は各 `package.json` の `dependencies` で表現する。
 
+## apps 間の依存
+
+- 原則 apps 同士は依存しない
+- 例外: `apps/dot-sdk` への **型のみ依存** (`import type { ... } from '@every-fail/dot-sdk'`) は OK
+  - 例: `apps/web` が `DotContext` / `Unmount` / `Meta` 型を import
+  - 値 (関数、定数) の依存は禁止
+  - 理由: dot-sdk は別リポ向けの公開エンドポイント (apps の中では特別な性質)
+
 ## packages のルール
 
 - 各 package の依存は `package.json` の `dependencies` で表現する
