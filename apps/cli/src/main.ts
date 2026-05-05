@@ -1,5 +1,6 @@
 import { handleConfig } from './config.ts'
 import { closeDb, getDb } from './db.ts'
+import { migrate } from './migrations.ts'
 
 const usage = () => {
   console.log('Usage: pnpm ef <command> [...args]')
@@ -30,6 +31,7 @@ const main = () => {
     process.exit(0)
   }
   const db = getDb()
+  migrate(db)
   const [command, ...rest] = args
   switch (command) {
     case 'config':
