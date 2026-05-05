@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util'
 import { handleConfig } from './config.ts'
 import { closeDb, getDb } from './db.ts'
 import { dotAdd } from './dot-add.ts'
+import { dotBuild } from './dot-build.ts'
 import { dotRm } from './dot-rm.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
@@ -81,6 +82,10 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
       )
       process.exit(1)
     }
+    if (action === 'build') {
+      dotBuild(db)
+      return
+    }
     console.log(`TODO: ef dot ${action}`)
     return
   }
@@ -93,6 +98,10 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
   if (action === 'rm') {
     const { positionals } = parseArgs({ args: rest, allowPositionals: true })
     dotRm(db, positionals)
+    return
+  }
+  if (action === 'build') {
+    dotBuild(db)
     return
   }
   console.log('TODO: ef dot', args)
