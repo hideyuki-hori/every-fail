@@ -32,7 +32,7 @@ export function select(title: string, items: MenuItem[]): Promise<string> {
         const marker = i === cursor ? '>' : ' '
         stdout.write(`\x1b[2K${marker} [${it.hotkey}] ${it.label}\n`)
       }
-      stdout.write('\x1b[2K[jk で選択, Enter で決定, Ctrl-C で中止]\n')
+      stdout.write('\x1b[2K[jk で選択, Enter で決定, Esc/Ctrl-C で中止]\n')
     }
 
     function cleanup(): void {
@@ -44,6 +44,10 @@ export function select(title: string, items: MenuItem[]): Promise<string> {
 
     function onKey(str: string | undefined, key: KeyEvent): void {
       if (key.ctrl && key.name === 'c') {
+        cleanup()
+        process.exit(130)
+      }
+      if (key.name === 'escape') {
         cleanup()
         process.exit(130)
       }
