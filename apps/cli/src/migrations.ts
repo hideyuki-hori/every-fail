@@ -6,7 +6,7 @@ const TARGET_VERSION = 1
 
 const MIGRATIONS: Record<number, string> = {}
 
-const getCurrentVersion = (db: DatabaseSync): number => {
+function getCurrentVersion(db: DatabaseSync): number {
   const row = db.prepare(selectSchemaVersionSQL).get()
   if (
     row !== null &&
@@ -20,7 +20,7 @@ const getCurrentVersion = (db: DatabaseSync): number => {
   return 0
 }
 
-export const migrate = (db: DatabaseSync) => {
+export function migrate(db: DatabaseSync): void {
   const current = getCurrentVersion(db)
   if (current >= TARGET_VERSION) return
   for (let v = current + 1; v <= TARGET_VERSION; v++) {

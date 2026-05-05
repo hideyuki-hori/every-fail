@@ -4,7 +4,7 @@ const ALPHABET =
   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 const LIMIT = 62 * 4
 
-export const nanoId = (size = 8): string => {
+export function nanoId(size = 8): string {
   let id = ''
   while (id.length < size) {
     const bytes = randomBytes(size * 2)

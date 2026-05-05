@@ -25,11 +25,11 @@ type LoadResult = {
   shortCircuit?: boolean
 }
 
-export const resolve = async (
+export async function resolve(
   specifier: string,
   context: ResolveContext,
   nextResolve: (s: string, c: ResolveContext) => Promise<ResolveResult>
-): Promise<ResolveResult> => {
+): Promise<ResolveResult> {
   if (specifier.endsWith('.sql')) {
     const url = context.parentURL
       ? new URL(specifier, context.parentURL).href
@@ -39,11 +39,11 @@ export const resolve = async (
   return nextResolve(specifier, context)
 }
 
-export const load = async (
+export async function load(
   url: string,
   context: LoadContext,
   nextLoad: (u: string, c: LoadContext) => Promise<LoadResult>
-): Promise<LoadResult> => {
+): Promise<LoadResult> {
   if (url.endsWith('.sql')) {
     const filePath = fileURLToPath(url)
     const content = await readFile(filePath, 'utf8')

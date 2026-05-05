@@ -7,7 +7,7 @@ import { dotRm } from './dot-rm.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
 
-const usage = () => {
+function usage(): void {
   console.log('Usage: pnpm ef <command> [...args]')
   console.log('')
   console.log('Commands:')
@@ -17,7 +17,7 @@ const usage = () => {
   console.log('  deploy — every.fail 自体の deploy')
 }
 
-const usageDot = () => {
+function usageDot(): void {
   console.log('Usage: pnpm ef dot <action> [...args]')
   console.log('')
   console.log('Actions:')
@@ -28,7 +28,7 @@ const usageDot = () => {
   console.log('  deploy — デプロイ')
 }
 
-const usageDots = () => {
+function usageDots(): void {
   console.log('Usage: pnpm ef dots <action>')
   console.log('')
   console.log('Actions:')
@@ -37,8 +37,8 @@ const usageDots = () => {
   console.log('  migrate — マイグレーション実行')
 }
 
-const pickTopCommand = () =>
-  select('ef', [
+function pickTopCommand(): Promise<string> {
+  return select('ef', [
     { hotkey: '1', label: 'config — 設定操作', value: 'config' },
     { hotkey: '2', label: 'dot — dot 操作', value: 'dot' },
     { hotkey: '3', label: 'dots — dots 操作', value: 'dots' },
@@ -48,24 +48,27 @@ const pickTopCommand = () =>
       value: 'deploy',
     },
   ])
+}
 
-const pickDotAction = () =>
-  select('ef dot', [
+function pickDotAction(): Promise<string> {
+  return select('ef dot', [
     { hotkey: '1', label: 'add — dot 新規作成', value: 'add' },
     { hotkey: '2', label: 'rm — dot 削除', value: 'rm' },
     { hotkey: '3', label: 'dev — 開発サーバー起動', value: 'dev' },
     { hotkey: '4', label: 'build — ビルド', value: 'build' },
     { hotkey: '5', label: 'deploy — デプロイ', value: 'deploy' },
   ])
+}
 
-const pickDotsAction = () =>
-  select('ef dots', [
+function pickDotsAction(): Promise<string> {
+  return select('ef dots', [
     { hotkey: '1', label: 'build — 全 dot をビルド', value: 'build' },
     { hotkey: '2', label: 'deploy — 全 dot をデプロイ', value: 'deploy' },
     { hotkey: '3', label: 'migrate — マイグレーション実行', value: 'migrate' },
   ])
+}
 
-const handleDot = async (db: DatabaseSync, args: string[]) => {
+async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
   if (args.length === 0) {
     if (!isTty()) {
       usageDot()
@@ -95,7 +98,7 @@ const handleDot = async (db: DatabaseSync, args: string[]) => {
   console.log('TODO: ef dot', args)
 }
 
-const handleDots = async (args: string[]) => {
+async function handleDots(args: string[]): Promise<void> {
   if (args.length === 0) {
     if (!isTty()) {
       usageDots()
@@ -108,11 +111,11 @@ const handleDots = async (args: string[]) => {
   console.log('TODO: ef dots', args)
 }
 
-const handleDeploy = () => {
+function handleDeploy(): void {
   console.log('TODO: ef deploy')
 }
 
-const main = async () => {
+async function main(): Promise<void> {
   let args = process.argv.slice(2)
   if (args.length === 0) {
     if (!isTty()) {

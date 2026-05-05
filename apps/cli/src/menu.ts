@@ -14,15 +14,17 @@ type KeyEvent = {
   sequence?: string
 }
 
-export const isTty = () => Boolean(process.stdin.isTTY && process.stdout.isTTY)
+export function isTty(): boolean {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY)
+}
 
-export const select = (title: string, items: MenuItem[]): Promise<string> =>
-  new Promise(resolve => {
+export function select(title: string, items: MenuItem[]): Promise<string> {
+  return new Promise(resolve => {
     let cursor = 0
     const stdin = process.stdin
     const stdout = process.stdout
 
-    const draw = (rewrite: boolean) => {
+    function draw(rewrite: boolean): void {
       if (rewrite) stdout.write(`\x1b[${items.length + 2}A`)
       stdout.write(`\x1b[2K${title}\n`)
       for (let i = 0; i < items.length; i++) {
@@ -33,13 +35,13 @@ export const select = (title: string, items: MenuItem[]): Promise<string> =>
       stdout.write('\x1b[2K[jk で選択, Enter で決定, Ctrl-C で中止]\n')
     }
 
-    const cleanup = () => {
+    function cleanup(): void {
       stdin.off('keypress', onKey)
       if (stdin.isTTY) stdin.setRawMode(false)
       stdin.pause()
     }
 
-    const onKey = (str: string | undefined, key: KeyEvent) => {
+    function onKey(str: string | undefined, key: KeyEvent): void {
       if (key.ctrl && key.name === 'c') {
         cleanup()
         process.exit(130)
@@ -74,3 +76,4 @@ export const select = (title: string, items: MenuItem[]): Promise<string> =>
     draw(false)
     stdin.on('keypress', onKey)
   })
+}

@@ -4,20 +4,20 @@ import type { DatabaseSync } from 'node:sqlite'
 import { getValue } from './config.ts'
 import deleteDotSQL from './sql/delete-dot.sql'
 
-const expandTilde = (p: string) => {
+function expandTilde(p: string): string {
   if (p.startsWith('~')) {
     return (process.env.HOME ?? '') + p.slice(1)
   }
   return p
 }
 
-const extractIdFromMeta = (metaPath: string): string | null => {
+function extractIdFromMeta(metaPath: string): string | null {
   const raw = readFileSync(metaPath, 'utf8')
   const m = raw.match(/id:\s*'([^']+)'/)
   return m ? m[1] : null
 }
 
-export const dotRm = (db: DatabaseSync, args: string[]) => {
+export function dotRm(db: DatabaseSync, args: string[]): void {
   const folder = args[0]
   if (!folder) {
     console.error('Usage: pnpm ef dot rm <folder>')

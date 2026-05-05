@@ -9,41 +9,42 @@ import selectDotByIdSQL from './sql/select-dot-by-id.sql'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
-const expandTilde = (p: string) => {
+function expandTilde(p: string): string {
   if (p.startsWith('~')) {
     return (process.env.HOME ?? '') + p.slice(1)
   }
   return p
 }
 
-const sanitizeTitle = (title: string): string =>
-  title
+function sanitizeTitle(title: string): string {
+  return title
     .trim()
     .replace(/[/\\:*?"<>|]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
+}
 
-const formatYyMmDd = (d: Date): string => {
+function formatYyMmDd(d: Date): string {
   const yy = String(d.getFullYear() % 100).padStart(2, '0')
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yy}-${mm}-${dd}`
 }
 
-const formatIsoDate = (d: Date): string => {
+function formatIsoDate(d: Date): string {
   const yyyy = String(d.getFullYear())
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yyyy}-${mm}-${dd}`
 }
 
-const dotIdExists = (db: DatabaseSync, id: string): boolean => {
+function dotIdExists(db: DatabaseSync, id: string): boolean {
   const row = db.prepare(selectDotByIdSQL).get(id)
   return row !== null && row !== undefined
 }
 
-const generateUniqueId = (db: DatabaseSync): string => {
+function generateUniqueId(db: DatabaseSync): string {
   for (let i = 0; i < 16; i++) {
     const id = nanoId(8)
     if (!dotIdExists(db, id)) return id
@@ -52,13 +53,13 @@ const generateUniqueId = (db: DatabaseSync): string => {
   process.exit(1)
 }
 
-const renderTemplate = (name: string, vars: Record<string, string>): string => {
+function renderTemplate(name: string, vars: Record<string, string>): string {
   const tmplPath = join(here, 'templates', name)
   const raw = readFileSync(tmplPath, 'utf8')
   return raw.replace(/{{(\w+)}}/g, (_, key) => vars[key] ?? '')
 }
 
-export const dotAdd = (db: DatabaseSync, args: string[]) => {
+export function dotAdd(db: DatabaseSync, args: string[]): void {
   const rawTitle = args[0]
   if (!rawTitle) {
     console.error('Usage: pnpm ef dot add <title>')

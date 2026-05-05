@@ -10,13 +10,13 @@ const dbPath = join(efDir, 'db')
 
 let db: DatabaseSync | null = null
 
-const ensureEfDir = () => {
+function ensureEfDir(): void {
   if (!existsSync(efDir)) {
     mkdirSync(efDir, { recursive: true })
   }
 }
 
-export const getDb = () => {
+export function getDb(): DatabaseSync {
   if (!db) {
     ensureEfDir()
     db = new DatabaseSync(dbPath)
@@ -26,7 +26,7 @@ export const getDb = () => {
   return db
 }
 
-export const closeDb = () => {
+export function closeDb(): void {
   if (db) {
     db.close()
     db = null

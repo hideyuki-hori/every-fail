@@ -8,14 +8,14 @@ import upsertSettingSQL from './sql/upsert-setting.sql'
 const USER_KEYS = new Set(['every-fail-root-path'])
 const PATH_KEYS = new Set(['every-fail-root-path'])
 
-const expandTilde = (p: string) => {
+function expandTilde(p: string): string {
   if (p.startsWith('~')) {
     return (process.env.HOME ?? '') + p.slice(1)
   }
   return p
 }
 
-const validate = (key: string, value: string) => {
+function validate(key: string, value: string): void {
   if (PATH_KEYS.has(key)) {
     const expanded = expandTilde(value)
     if (!existsSync(expanded)) {
@@ -29,7 +29,7 @@ const validate = (key: string, value: string) => {
   }
 }
 
-export const getValue = (db: DatabaseSync, key: string): string | null => {
+export function getValue(db: DatabaseSync, key: string): string | null {
   const row = db.prepare(selectSettingByKeySQL).get(key)
   if (
     row !== null &&
@@ -42,15 +42,15 @@ export const getValue = (db: DatabaseSync, key: string): string | null => {
   return null
 }
 
-const setValue = (db: DatabaseSync, key: string, value: string) => {
+function setValue(db: DatabaseSync, key: string, value: string): void {
   db.prepare(upsertSettingSQL).run(key, value)
 }
 
-const unsetValue = (db: DatabaseSync, key: string) => {
+function unsetValue(db: DatabaseSync, key: string): void {
   db.prepare(deleteSettingSQL).run(key)
 }
 
-const listAll = (db: DatabaseSync) => {
+function listAll(db: DatabaseSync): void {
   const rows = db.prepare(selectAllSettingsSQL).all()
   for (const row of rows) {
     if (
@@ -66,7 +66,7 @@ const listAll = (db: DatabaseSync) => {
   }
 }
 
-export const handleConfig = (db: DatabaseSync, args: string[]) => {
+export function handleConfig(db: DatabaseSync, args: string[]): void {
   const [first, second, third] = args
 
   if (first === 'list') {
