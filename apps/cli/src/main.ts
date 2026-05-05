@@ -15,8 +15,8 @@ function usage(): void {
   console.log('Commands:')
   console.log('  config — 設定操作 (get / set / unset / list)')
   console.log('  dot — dot 操作 (add / rm / dev / build / deploy)')
-  console.log('  dots — dots 操作 (build / deploy / migrate)')
-  console.log('  deploy — every.fail 自体の deploy')
+  console.log('  build — 基盤 (web / /dots 一覧 / sitemap) を build')
+  console.log('  deploy — 基盤を Cloudflare に deploy')
 }
 
 function usageDot(): void {
@@ -30,25 +30,12 @@ function usageDot(): void {
   console.log('  deploy — デプロイ')
 }
 
-function usageDots(): void {
-  console.log('Usage: pnpm ef dots <action>')
-  console.log('')
-  console.log('Actions:')
-  console.log('  build — 全 dot をビルド')
-  console.log('  deploy — 全 dot をデプロイ')
-  console.log('  migrate — マイグレーション実行')
-}
-
 function pickTopCommand(): Promise<string> {
   return select('ef', [
     { hotkey: '1', label: 'config — 設定操作', value: 'config' },
     { hotkey: '2', label: 'dot — dot 操作', value: 'dot' },
-    { hotkey: '3', label: 'dots — dots 操作', value: 'dots' },
-    {
-      hotkey: '4',
-      label: 'deploy — every.fail 自体の deploy',
-      value: 'deploy',
-    },
+    { hotkey: '3', label: 'build — 基盤を build', value: 'build' },
+    { hotkey: '4', label: 'deploy — 基盤を deploy', value: 'deploy' },
   ])
 }
 
@@ -59,14 +46,6 @@ function pickDotAction(): Promise<string> {
     { hotkey: '3', label: 'dev — 開発サーバー起動', value: 'dev' },
     { hotkey: '4', label: 'build — ビルド', value: 'build' },
     { hotkey: '5', label: 'deploy — デプロイ', value: 'deploy' },
-  ])
-}
-
-function pickDotsAction(): Promise<string> {
-  return select('ef dots', [
-    { hotkey: '1', label: 'build — 全 dot をビルド', value: 'build' },
-    { hotkey: '2', label: 'deploy — 全 dot をデプロイ', value: 'deploy' },
-    { hotkey: '3', label: 'migrate — マイグレーション実行', value: 'migrate' },
   ])
 }
 
@@ -108,17 +87,8 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
   console.log('TODO: ef dot', args)
 }
 
-async function handleDots(args: string[]): Promise<void> {
-  if (args.length === 0) {
-    if (!isTty()) {
-      usageDots()
-      process.exit(1)
-    }
-    const action = await pickDotsAction()
-    console.log(`TODO: ef dots ${action}`)
-    return
-  }
-  console.log('TODO: ef dots', args)
+function handleBuild(): void {
+  console.log('TODO: ef build')
 }
 
 function handleDeploy(): void {
@@ -146,8 +116,8 @@ async function main(): Promise<void> {
       case 'dot':
         await handleDot(db, rest)
         break
-      case 'dots':
-        await handleDots(rest)
+      case 'build':
+        handleBuild()
         break
       case 'deploy':
         handleDeploy()
