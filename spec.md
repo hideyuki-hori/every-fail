@@ -138,20 +138,19 @@ type Meta = {
 ## コマンド一覧
 
 ```
-ef                                    引数省略時は対話メニュー (config / dots / dot)
+ef                                    引数省略時は対話メニュー (config / dot)
 ef config <key> <action> [<value>]    設定操作 (get / set / unset / list)
-ef deploy                             every.fail 自体の deploy
-ef dots                               引数省略時は対話メニュー (build / deploy / migrate)
-ef dots build                         /dots で使用する一覧ページ、sitemap.xml を生成
-ef dots deploy
-ef dots migrate                       全 dot リポジトリに対して codemod を実行する
+ef build                              基盤 (web / /dots 一覧 / sitemap) を build
+ef deploy [--apply]                   基盤を Cloudflare に deploy (default dry-run)
 ef dot add <title>                    新規 dot を作成
 ef dot rm <folder>                    dot を削除 (フォルダ + dots テーブル)
-ef dot dev                            ブログ開発
+ef dot dev                            ブログ開発 (preview)
 ef dot build                          dot フォルダの内容を build
-ef dot deploy                         dot フォルダの内容を deploy
+ef dot deploy [--apply]               dot フォルダの内容を deploy (default dry-run)
+ef dot deploy --all [--apply]         全 dot を順次 deploy
 ```
 
+- 共通フラグ: `--apply` を付けない限り deploy 系は dry-run (PUT/DELETE 対象を出力するだけ)
 - TODO: 各 dot コマンドの詳細仕様
 
 ## ~/.ef/ ディレクトリ
@@ -213,12 +212,23 @@ END;
 | key | 管理者 | 用途 |
 |---|---|---|
 | `every-fail-root-path` | ユーザー | monorepo の dots/ パス |
+| `cf-account-id` | ユーザー | Cloudflare Account ID |
+| `cf-kv-namespace-id` | ユーザー | KV namespace ID (HTML 用) |
+| `cf-r2-bucket` | ユーザー | R2 bucket name (assets 用) |
 | `schema-version` | CLI | スキーマバージョン (integer、1 → 2 → 3 ...) |
 
 - `ef config <key>` で操作できるのはユーザー管理キーのみ
 - CLI 自動管理キーは `ef config` の操作対象外
 - `ef config list` では全キーを表示(デバッグ用)
 - 未知キーへの `set` は exit 1
+
+### secret は環境変数
+
+| 環境変数 | 用途 |
+|---|---|
+| `EF_CF_API_TOKEN` | Cloudflare API token (deploy で使用) |
+
+- secret は `~/.ef/db` に保管しない (id 系は db、token は env)
 
 ## ef config コマンド
 
@@ -241,9 +251,9 @@ END;
 
 ## 引数省略時の対話メニュー
 
-- `ef` → `config / dots / dot` を選択
-- `ef dots` → `new / build / deploy / migrate` を選択
-- 入力方式: 矢印キー + a/b/c... 選択式
+- `ef` → `config / dot / build / deploy` を選択
+- `ef dot` → `add / rm / dev / build / deploy` を選択
+- 入力方式: ホットキー (1-9) + 移動 (jk) + Enter で決定 + Esc/Ctrl-C で中止
 - 実装: `node:readline` の keypress イベント
 - 非 TTY 時 (CI / パイプ等): exit 1 + ヘルプ表示
 
@@ -258,16 +268,104 @@ END;
 
 # ビルド
 
-- TODO: content.html / full.html の生成方針
-- 保存先:
-  - HTML (content.html / full.html): KV
-  - assets (画像 / shader / 動画など): R2
-- TODO: アセット管理(dot 内のファイルを自動収集する仕組み)
-- TODO: D1 への meta 流し込み (ビルド時)
+## 用語
+
+- `index.html`: 完全な HTML (head + body 一式、初回アクセス用 / SEO 用)
+- `partial.html`: `<article>` 部分のみ (SPA 遷移時に fetch して差し替える)
+
+## dot の build 出力
+
+`<every-fail-root-path>/dist/dots/<id>/` 以下に:
+
+```
+index.html        dot の完全 HTML (テンプレ展開済)
+partial.html      dot 本体 (mount() で root に追加された innerHTML)
+assets/           dot の assets/ をコピー
+```
+
+## 基盤 (`ef build`) の出力
+
+```
+<root>/dist/pages/index/index.html       /
+<root>/dist/pages/about/index.html       /about
+<root>/dist/pages/dots/index.html        /dots (一覧)
+<root>/dist/pages/404.html               /404
+<root>/dist/sitemap.xml                  サイトマップ
+<root>/dist/assets/                      基盤側の共通アセット
+```
+
+## 保存先
+
+- HTML (index.html / partial.html / 404.html / sitemap.xml): Cloudflare KV
+- assets (画像 / shader / 動画など): Cloudflare R2
+
+## TODO
+
+- アセット管理 (dot 内のファイルを自動収集する仕組み)
+- D1 への meta 流し込み (#14)
+
+# Cloudflare デプロイ
+
+## 方針
+
+- `wrangler` は使わない、Cloudflare API を直接叩く
+- credential はハイブリッド管理: token は環境変数、id 系は `~/.ef/db`
+- すべての deploy 系コマンドは **default dry-run**、`--apply` で実際に PUT/DELETE する
+- アップロードは **scoped delete + upload** (差分はとらない、毎回全部 upload)
+
+## KV キー設計
+
+```
+dots/<id>/index.html            個別記事 (完全 HTML)
+dots/<id>/partial.html          個別記事 (article 部分のみ)
+pages/index/index.html          /
+pages/about/index.html          /about
+pages/dots/index.html           /dots (一覧)
+pages/404.html                  /404
+sitemap.xml                     サイトマップ
+```
+
+## R2 キー設計
+
+```
+dots/<id>/assets/<path>         dot の assets
+assets/<path>                   基盤側の共通アセット (ロゴ等)
+```
+
+## scoped delete + upload
+
+deploy ごとに自分の prefix を全削除 → upload する。差分はとらない。
+
+| コマンド | 削除する prefix |
+|---|---|
+| `ef dot deploy <id>` | KV: `dots/<id>/*` / R2: `dots/<id>/*` |
+| `ef deploy` | KV: `pages/*`, `sitemap.xml` / R2: `assets/*` (`dots/*` は除外) |
+
+短いウィンドウで該当 URL が 404 になる可能性あり (Cloudflare の eventual consistency、数秒〜)。個人ブログ運用なので許容。
+
+## dry-run / apply
+
+- default: dry-run。PUT/DELETE 対象のキー一覧を表示するだけ
+- `--apply`: 実際に Cloudflare API を叩く
+- 失敗時はエラー出力 + exit 1 (ローカル build 出力は残るのでリトライ可能)
+
+## 必要な認証情報
+
+| 種別 | 場所 | キー |
+|---|---|---|
+| API token (secret) | env | `EF_CF_API_TOKEN` |
+| Account ID | `~/.ef/db` | `cf-account-id` |
+| KV namespace ID | `~/.ef/db` | `cf-kv-namespace-id` |
+| R2 bucket name | `~/.ef/db` | `cf-r2-bucket` |
+
+## 削除した dot を Cloudflare から消す
+
+`ef dot rm` はローカル削除のみ。Cloudflare 側の削除は別途 (TODO):
+- `ef dot deploy --delete <id>` (upload せずに削除のみ) を予定
 
 # ブラウザ動作
 
-- TODO: 初回 full.html、以降 content.html
+- TODO: 初回 index.html、以降 partial.html
 - TODO: History API (pushState / popState) でページ遷移
 - TODO: prefetch 戦略
 
