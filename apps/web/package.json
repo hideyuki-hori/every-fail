@@ -14,6 +14,7 @@
     "vite": "^8.0.4"
   },
   "dependencies": {
-    "@every-fail/core": "workspace:*"
+    "@every-fail/core": "workspace:*",
+    "@every-fail/dot-sdk": "workspace:*"
   }
 }

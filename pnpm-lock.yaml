@@ -52,6 +52,9 @@ importers:
       '@every-fail/core':
         specifier: workspace:*
         version: link:../../core
+      '@every-fail/dot-sdk':
+        specifier: workspace:*
+        version: link:../dot-sdk
     devDependencies:
       '@types/node':
         specifier: ^25.5.2
