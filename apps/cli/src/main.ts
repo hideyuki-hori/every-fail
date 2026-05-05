@@ -9,6 +9,7 @@ import { dotDeploy } from './dot-deploy.ts'
 import { dotDeployAll } from './dot-deploy-all.ts'
 import { dotRm } from './dot-rm.ts'
 import { efBuild } from './ef-build.ts'
+import { efDeploy } from './ef-deploy.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
 
@@ -106,8 +107,8 @@ function handleBuild(db: DatabaseSync): void {
   efBuild(db)
 }
 
-function handleDeploy(): void {
-  console.log('TODO: ef deploy')
+async function handleDeploy(db: DatabaseSync, args: string[]): Promise<void> {
+  await efDeploy(db, args)
 }
 
 async function main(): Promise<void> {
@@ -135,7 +136,7 @@ async function main(): Promise<void> {
         handleBuild(db)
         break
       case 'deploy':
-        handleDeploy()
+        await handleDeploy(db, rest)
         break
       default:
         console.error(`Unknown command: ${command}`)

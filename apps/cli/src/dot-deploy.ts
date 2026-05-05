@@ -1,44 +1,13 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
+import { detectContentType } from './cloudflare/content-type.ts'
 import { loadCredentials } from './cloudflare/credentials.ts'
 import { createKVClient } from './cloudflare/kv.ts'
 import { createR2Client } from './cloudflare/r2.ts'
 import { getValue } from './config.ts'
 import { ensureDotFolder, expandTilde } from './dot-meta.ts'
-
-function walkFiles(dir: string): string[] {
-  const out: string[] = []
-  for (const entry of readdirSync(dir)) {
-    const p = join(dir, entry)
-    const s = statSync(p)
-    if (s.isDirectory()) {
-      out.push(...walkFiles(p))
-    } else if (s.isFile()) {
-      out.push(p)
-    }
-  }
-  return out
-}
-
-function detectContentType(path: string): string {
-  if (path.endsWith('.html')) return 'text/html; charset=utf-8'
-  if (path.endsWith('.css')) return 'text/css; charset=utf-8'
-  if (path.endsWith('.js')) return 'application/javascript; charset=utf-8'
-  if (path.endsWith('.mjs')) return 'application/javascript; charset=utf-8'
-  if (path.endsWith('.json')) return 'application/json; charset=utf-8'
-  if (path.endsWith('.png')) return 'image/png'
-  if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return 'image/jpeg'
-  if (path.endsWith('.gif')) return 'image/gif'
-  if (path.endsWith('.svg')) return 'image/svg+xml'
-  if (path.endsWith('.webp')) return 'image/webp'
-  if (path.endsWith('.avif')) return 'image/avif'
-  if (path.endsWith('.mp4')) return 'video/mp4'
-  if (path.endsWith('.webm')) return 'video/webm'
-  if (path.endsWith('.wgsl')) return 'text/plain; charset=utf-8'
-  if (path.endsWith('.txt')) return 'text/plain; charset=utf-8'
-  return 'application/octet-stream'
-}
+import { walkFiles } from './walk.ts'
 
 type DeployPlan = {
   id: string
