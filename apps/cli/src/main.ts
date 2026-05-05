@@ -1,3 +1,5 @@
+import { closeDb, getDb } from './db.ts'
+
 const usage = () => {
   console.log('Usage: pnpm ef <command> [...args]')
   console.log('')
@@ -30,6 +32,7 @@ const main = () => {
     usage()
     process.exit(0)
   }
+  getDb()
   const [command, ...rest] = args
   switch (command) {
     case 'config':
@@ -47,8 +50,10 @@ const main = () => {
     default:
       console.error(`Unknown command: ${command}`)
       usage()
+      closeDb()
       process.exit(1)
   }
+  closeDb()
 }
 
 main()
