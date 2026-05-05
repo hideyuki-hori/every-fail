@@ -1,3 +1,4 @@
+import { handleConfig } from './config.ts'
 import { closeDb, getDb } from './db.ts'
 
 const usage = () => {
@@ -8,10 +9,6 @@ const usage = () => {
   console.log('  dot — dot 操作 (new / dev / build / deploy)')
   console.log('  dots — dots 操作 (build / deploy / migrate)')
   console.log('  deploy — every.fail 自体の deploy')
-}
-
-const handleConfig = (args: string[]) => {
-  console.log('TODO: ef config', args)
 }
 
 const handleDot = (args: string[]) => {
@@ -32,11 +29,11 @@ const main = () => {
     usage()
     process.exit(0)
   }
-  getDb()
+  const db = getDb()
   const [command, ...rest] = args
   switch (command) {
     case 'config':
-      handleConfig(rest)
+      handleConfig(db, rest)
       break
     case 'dot':
       handleDot(rest)
