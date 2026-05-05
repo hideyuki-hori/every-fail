@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev:web": "pnpm --filter @every-fail/web dev",
+    "ef": "node apps/cli/src/main.ts",
     "build": "pnpm -r build",
     "lint": "biome check",
     "lint:fix": "biome check --write",
