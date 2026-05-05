@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
+    "aws4fetch": "1.0.20",
     "typescript": "~6.0.2"
   }
 }

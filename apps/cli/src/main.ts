@@ -5,6 +5,7 @@ import { handleConfig } from './config.ts'
 import { closeDb, getDb } from './db.ts'
 import { dotAdd } from './dot-add.ts'
 import { dotBuild } from './dot-build.ts'
+import { dotDeploy } from './dot-deploy.ts'
 import { dotRm } from './dot-rm.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
@@ -66,6 +67,10 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
       await dotBuild(db)
       return
     }
+    if (action === 'deploy') {
+      await dotDeploy(db, [])
+      return
+    }
     console.log(`TODO: ef dot ${action}`)
     return
   }
@@ -81,7 +86,11 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
     return
   }
   if (action === 'build') {
-    dotBuild(db)
+    await dotBuild(db)
+    return
+  }
+  if (action === 'deploy') {
+    await dotDeploy(db, rest)
     return
   }
   console.log('TODO: ef dot', args)
