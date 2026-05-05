@@ -85,16 +85,17 @@ type Meta = {
   tags: string[]
   createdAt: string
   updatedAt: string
+  publishedAt?: string
   status: 'draft' | 'published'
   ogImage?: string
 }
 ```
 
-- `id`: NanoID 8文字。`ef dot new` 時に既存と衝突チェック
+- `id`: NanoID 8文字。`ef dot add` 時に既存と衝突チェック
 - `createdAt` / `updatedAt`: ISO 8601
-- `createdAt` はフォルダ名の日付と一致 (`ef dot new` した日、不変)
+- `createdAt` はフォルダ名の日付と一致 (`ef dot add` した日、不変)
+- `publishedAt`: ISO 8601、任意。`status` を `published` にした時点の日時を入れる。`/dots` 一覧のソート基準 (降順、未公開はスキップ)
 - `ogImage`: 任意。未指定ならサイト共通のデフォルト画像にフォールバック
-- TODO: `publishedAt` を追加するか(`/dots` 一覧のソート基準を決める時に再検討)
 - TODO: その他 SEO に必要なもの
 
 # URL 設計

@@ -7,5 +7,6 @@ export const meta: Meta = {
   tags: ['hello'],
   createdAt: '2026-05-05',
   updatedAt: '2026-05-05',
+  publishedAt: '2026-05-05',
   status: 'published',
 }

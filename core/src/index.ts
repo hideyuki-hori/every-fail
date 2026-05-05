@@ -5,6 +5,7 @@ export type Meta = {
   tags: string[]
   createdAt: string
   updatedAt: string
+  publishedAt?: string
   status: 'draft' | 'published'
   ogImage?: string
 }
