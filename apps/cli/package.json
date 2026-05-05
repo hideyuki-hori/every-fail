@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "ef": "./bin/ef"
+  },
   "devDependencies": {
     "@types/node": "^25.5.2",
     "typescript": "~6.0.2"

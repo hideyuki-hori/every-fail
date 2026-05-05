@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+SCRIPT="$0"
+while [ -L "$SCRIPT" ]; do
+  TARGET="$(readlink "$SCRIPT")"
+  case "$TARGET" in
+    /*) SCRIPT="$TARGET" ;;
+    *) SCRIPT="$(cd "$(dirname "$SCRIPT")" && pwd)/$TARGET" ;;
+  esac
+done
+
+HERE="$(cd "$(dirname "$SCRIPT")" && pwd)"
+exec node --import "$HERE/../register-loader.ts" "$HERE/../src/main.ts" "$@"
