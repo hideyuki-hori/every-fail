@@ -6,6 +6,7 @@ import { closeDb, getDb } from './db.ts'
 import { dotAdd } from './dot-add.ts'
 import { dotBuild } from './dot-build.ts'
 import { dotDeploy } from './dot-deploy.ts'
+import { dotDeployAll } from './dot-deploy-all.ts'
 import { dotRm } from './dot-rm.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
@@ -90,6 +91,10 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
     return
   }
   if (action === 'deploy') {
+    if (rest.includes('--all')) {
+      await dotDeployAll(db, rest)
+      return
+    }
     await dotDeploy(db, rest)
     return
   }
