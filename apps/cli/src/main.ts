@@ -1,3 +1,4 @@
+import './suppress-warnings.ts'
 import type { DatabaseSync } from 'node:sqlite'
 import { parseArgs } from 'node:util'
 import { handleConfig } from './config.ts'

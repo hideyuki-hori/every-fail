@@ -39,6 +39,7 @@ export function select(title: string, items: MenuItem[]): Promise<string> {
       stdin.off('keypress', onKey)
       if (stdin.isTTY) stdin.setRawMode(false)
       stdin.pause()
+      stdout.write(`\x1b[${items.length + 2}A\x1b[0J`)
     }
 
     function onKey(str: string | undefined, key: KeyEvent): void {
