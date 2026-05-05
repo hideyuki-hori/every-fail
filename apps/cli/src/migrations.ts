@@ -1,13 +1,13 @@
 import type { DatabaseSync } from 'node:sqlite'
+import selectSchemaVersionSQL from './sql/select-schema-version.sql'
+import updateSchemaVersionSQL from './sql/update-schema-version.sql'
 
 const TARGET_VERSION = 1
 
 const MIGRATIONS: Record<number, string> = {}
 
 const getCurrentVersion = (db: DatabaseSync): number => {
-  const row = db
-    .prepare('SELECT value FROM settings WHERE key = ?')
-    .get('schema-version')
+  const row = db.prepare(selectSchemaVersionSQL).get()
   if (
     row !== null &&
     typeof row === 'object' &&
@@ -28,9 +28,6 @@ export const migrate = (db: DatabaseSync) => {
     if (sql) {
       db.exec(sql)
     }
-    db.prepare('UPDATE settings SET value = ? WHERE key = ?').run(
-      String(v),
-      'schema-version'
-    )
+    db.prepare(updateSchemaVersionSQL).run(String(v))
   }
 }

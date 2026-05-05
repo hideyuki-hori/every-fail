@@ -1,5 +1,9 @@
 import { existsSync, statSync } from 'node:fs'
 import type { DatabaseSync } from 'node:sqlite'
+import deleteSettingSQL from './sql/delete-setting.sql'
+import selectAllSettingsSQL from './sql/select-all-settings.sql'
+import selectSettingByKeySQL from './sql/select-setting-by-key.sql'
+import upsertSettingSQL from './sql/upsert-setting.sql'
 
 const USER_KEYS = new Set(['every-fail-root-path'])
 const PATH_KEYS = new Set(['every-fail-root-path'])
@@ -26,7 +30,7 @@ const validate = (key: string, value: string) => {
 }
 
 const getValue = (db: DatabaseSync, key: string): string | null => {
-  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key)
+  const row = db.prepare(selectSettingByKeySQL).get(key)
   if (
     row !== null &&
     typeof row === 'object' &&
@@ -39,17 +43,15 @@ const getValue = (db: DatabaseSync, key: string): string | null => {
 }
 
 const setValue = (db: DatabaseSync, key: string, value: string) => {
-  db.prepare(
-    'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value'
-  ).run(key, value)
+  db.prepare(upsertSettingSQL).run(key, value)
 }
 
 const unsetValue = (db: DatabaseSync, key: string) => {
-  db.prepare('DELETE FROM settings WHERE key = ?').run(key)
+  db.prepare(deleteSettingSQL).run(key)
 }
 
 const listAll = (db: DatabaseSync) => {
-  const rows = db.prepare('SELECT key, value FROM settings').all()
+  const rows = db.prepare(selectAllSettingsSQL).all()
   for (const row of rows) {
     if (
       row !== null &&
