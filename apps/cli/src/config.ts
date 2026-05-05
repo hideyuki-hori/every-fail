@@ -5,7 +5,12 @@ import selectAllSettingsSQL from './sql/select-all-settings.sql'
 import selectSettingByKeySQL from './sql/select-setting-by-key.sql'
 import upsertSettingSQL from './sql/upsert-setting.sql'
 
-const USER_KEYS = new Set(['every-fail-root-path'])
+const USER_KEYS = new Set([
+  'every-fail-root-path',
+  'cloudflare-account-id',
+  'cloudflare-kv-namespace-id',
+  'cloudflare-r2-bucket',
+])
 const PATH_KEYS = new Set(['every-fail-root-path'])
 
 function expandTilde(p: string): string {
