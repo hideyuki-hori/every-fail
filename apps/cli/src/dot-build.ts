@@ -7,8 +7,9 @@ import {
 } from 'node:fs'
 import { dirname, join } from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { getValue } from './config.ts'
+import { createRoot, setupDom } from './dom-stub.ts'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
@@ -58,7 +59,20 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#39;')
 }
 
-export function dotBuild(db: DatabaseSync): void {
+async function renderPartial(cwd: string): Promise<string> {
+  setupDom()
+  const mainPath = join(cwd, 'main.ts')
+  const mod = await import(pathToFileURL(mainPath).href)
+  if (typeof mod.mount !== 'function') {
+    console.error(`mount export not found in ${mainPath}`)
+    process.exit(1)
+  }
+  const root = createRoot()
+  mod.mount({ root })
+  return root.innerHTML
+}
+
+export async function dotBuild(db: DatabaseSync): Promise<void> {
   const cwd = process.cwd()
   const meta = ensureDotFolder(cwd)
 
@@ -75,8 +89,7 @@ export function dotBuild(db: DatabaseSync): void {
   const distDir = join(expandedRoot, 'dist', 'dots', meta.id)
   mkdirSync(distDir, { recursive: true })
 
-  const partial =
-    '<!-- TODO: dot を Node 実行して innerHTML を抜き出す (別 issue) -->'
+  const partial = await renderPartial(cwd)
   writeFileSync(join(distDir, 'partial.html'), `${partial}\n`)
 
   const html = renderTemplate('index.html.tmpl', {

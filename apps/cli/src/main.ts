@@ -84,7 +84,7 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
       process.exit(1)
     }
     if (action === 'build') {
-      dotBuild(db)
+      await dotBuild(db)
       return
     }
     console.log(`TODO: ef dot ${action}`)

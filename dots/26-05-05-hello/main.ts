@@ -1,6 +1,6 @@
 import type { DotContext, Unmount } from '@every-fail/dot-sdk'
 
-export { meta } from './meta'
+export { meta } from './meta.ts'
 
 export const mount = (c: DotContext): Unmount => {
   const article = document.createElement('article')
