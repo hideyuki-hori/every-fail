@@ -9,3 +9,5 @@ export type Meta = {
   status: 'draft' | 'published'
   ogImage?: string
 }
+
+export type LogFn = (...args: unknown[]) => void

@@ -25,6 +25,7 @@ monorepo は pnpm workspace で管理する。
   - dot-sdk: 別 repo などで使用する dot の sdk (公開エンドポイント)
 - packages
   - core: 基本ユーティリティ + pub/sub + 共通型 (最下層)
+  - browser: ブラウザ環境の wrapper (`console.{log,info,error,warn,debug}`、`fetch` など)。apps/web から使う
   - design: design-token (`token('key')` で色コード等を取得)
   - dom: DOM 操作の wrapper
   - router: router 機能 (web / server 両方で使う)

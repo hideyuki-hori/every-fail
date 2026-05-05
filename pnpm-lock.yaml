@@ -69,6 +69,16 @@ importers:
         specifier: workspace:*
         version: link:../../apps/dot-sdk
 
+  packages/browser:
+    dependencies:
+      '@every-fail/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
   packages/core:
     devDependencies:
       typescript:
