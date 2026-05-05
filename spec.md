@@ -153,7 +153,7 @@ ef dot deploy                         dot フォルダの内容を deploy
 
 - `node:sqlite` (Node 24+ で stable)
 
-## 設定 DB スキーマ
+## settings テーブル
 
 ```sql
 CREATE TABLE settings (
@@ -173,6 +173,29 @@ END;
 
 - `value` は TEXT 固定。整数を入れる場合も文字列保存し、CLI 側で `parseInt`
 - キー命名規則: kebab-case
+
+## dots テーブル
+
+dot の id 衝突チェック・一覧管理用。
+
+```sql
+CREATE TABLE dots (
+  id TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
+CREATE TRIGGER dots_updated_at
+AFTER UPDATE ON dots
+BEGIN
+  UPDATE dots SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+    WHERE id = NEW.id;
+END;
+```
+
+- `id` は NanoID 8文字、各 dot の `meta.ts` の `id` と一致
+- `ef dot new` 時に衝突チェック (`SELECT 1 FROM dots WHERE id = ?`)、衝突したら再生成
+- 最小スキーマ。将来 title / folder_path / repo_path 等を追加する余地
 
 ## 設定キーのホワイトリスト
 
