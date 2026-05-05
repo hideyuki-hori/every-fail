@@ -125,20 +125,93 @@ type Meta = {
 
 # CLI (ef)
 
+## コマンド一覧
+
 ```
-ef                helpを表示
-ef deploy         every.fail 自体の deploy
-ef dots           ブログ一覧 (title) 表示
-ef dots build     /dots で使用する一覧ページ、sitemap.xml を生成
+ef                                    引数省略時は対話メニュー (config / dots / dot)
+ef config <key> <action> [<value>]    設定操作 (get / set / unset / list)
+ef deploy                             every.fail 自体の deploy
+ef dots                               引数省略時は対話メニュー (new / build / deploy / migrate)
+ef dots build                         /dots で使用する一覧ページ、sitemap.xml を生成
 ef dots deploy
-ef dot new        今の dir に新規 dot を作成する
-ef dot dev        ブログ開発
-ef dot build      今の dot フォルダの内容を build
-ef dot deploy     今の dot フォルダの内容を deploy
-ef dots migrate   全 dot リポジトリに対して codemod を実行する
+ef dots migrate                       全 dot リポジトリに対して codemod を実行する
+ef dot new                            新規 dot を作成
+ef dot dev                            ブログ開発
+ef dot build                          dot フォルダの内容を build
+ef dot deploy                         dot フォルダの内容を deploy
 ```
 
-- TODO: 各コマンドの詳細仕様
+- TODO: 各 dot コマンドの詳細仕様
+
+## ~/.ef/ ディレクトリ
+
+- 設定 DB: `~/.ef/db` (sqlite)
+- 将来 `~/.ef/` 配下にテンプレ画像等を配置する余地
+- 初回操作で `~/.ef/` が無ければ自動作成
+
+## sqlite ライブラリ
+
+- `node:sqlite` (Node 24+ で stable)
+
+## 設定 DB スキーマ
+
+```sql
+CREATE TABLE settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
+CREATE TRIGGER settings_updated_at
+AFTER UPDATE ON settings
+BEGIN
+  UPDATE settings SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+    WHERE key = NEW.key;
+END;
+```
+
+- `value` は TEXT 固定。整数を入れる場合も文字列保存し、CLI 側で `parseInt`
+- キー命名規則: kebab-case
+
+## 設定キーのホワイトリスト
+
+| key | 管理者 | 用途 |
+|---|---|---|
+| `every-fail-root-path` | ユーザー | monorepo の dots/ パス |
+| `schema-version` | CLI | スキーマバージョン (integer、1 → 2 → 3 ...) |
+
+- `ef config <key>` で操作できるのはユーザー管理キーのみ
+- CLI 自動管理キーは `ef config` の操作対象外
+- `ef config list` では全キーを表示(デバッグ用)
+- 未知キーへの `set` は exit 1
+
+## ef config コマンド
+
+- 形式: `ef config <key> <action> [<value>]`
+- アクション: `get` / `set` / `unset` / `list`
+- `set` のバリデーション: path 系キーは `stat` で path 存在確認、失敗で exit 1
+- 未設定で必要操作 → exit 1 (明示的 `init` は作らない)
+- 例:
+  - `ef config every-fail-root-path set ~/h/every-fail`
+  - `ef config every-fail-root-path get`
+  - `ef config every-fail-root-path unset`
+  - `ef config list`
+
+## マイグレーション
+
+- マイグレーション SQL を CLI 内に静的に持つ (`001_to_002.sql` 形式)
+- CLI 起動時に `schema-version` を読み、期待値より小さければ順次実行
+- 完了後 `UPDATE settings SET value = N WHERE key = 'schema-version'`
+- 初期: `schema-version = 1`
+
+## 引数省略時の対話メニュー
+
+- `ef` → `config / dots / dot` を選択
+- `ef dots` → `new / build / deploy / migrate` を選択
+- 入力方式: 矢印キー + a/b/c... 選択式
+- 実装: `node:readline` の keypress イベント
+- 非 TTY 時 (CI / パイプ等): exit 1 + ヘルプ表示
 
 # サイト構成
 
