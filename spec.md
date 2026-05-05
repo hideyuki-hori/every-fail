@@ -12,6 +12,7 @@ WebGPU/WebGL/Audio など使用する。
 - ランタイム `dependencies` は 0。
 - `devDependencies` のみ使用する (vite, typescript, vitest, biome 等)。
 - セキュリティ要件などでランタイム依存が必要になった場合は個別に議論する。
+- **wrangler は使用しない**。Cloudflare のデプロイは Cloudflare API を直接叩く方針 (apps/cli の `ef deploy` 等)。
 
 # project 構成
 
