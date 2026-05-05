@@ -6,6 +6,7 @@ export type DotMeta = {
   title: string
   description: string
   status: 'draft' | 'published'
+  publishedAt: string | null
 }
 
 export function readMeta(metaPath: string): DotMeta | null {
@@ -14,9 +15,10 @@ export function readMeta(metaPath: string): DotMeta | null {
   const title = raw.match(/title:\s*'([^']+)'/)?.[1]
   const description = raw.match(/description:\s*'([^']*)'/)?.[1] ?? ''
   const statusMatch = raw.match(/status:\s*'(draft|published)'/)?.[1]
+  const publishedAtMatch = raw.match(/publishedAt:\s*'([^']+)'/)?.[1] ?? null
   if (!id || !title) return null
   const status = statusMatch === 'published' ? 'published' : 'draft'
-  return { id, title, description, status }
+  return { id, title, description, status, publishedAt: publishedAtMatch }
 }
 
 export function ensureDotFolder(cwd: string): DotMeta {

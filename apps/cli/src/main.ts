@@ -8,6 +8,7 @@ import { dotBuild } from './dot-build.ts'
 import { dotDeploy } from './dot-deploy.ts'
 import { dotDeployAll } from './dot-deploy-all.ts'
 import { dotRm } from './dot-rm.ts'
+import { efBuild } from './ef-build.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
 
@@ -101,8 +102,8 @@ async function handleDot(db: DatabaseSync, args: string[]): Promise<void> {
   console.log('TODO: ef dot', args)
 }
 
-function handleBuild(): void {
-  console.log('TODO: ef build')
+function handleBuild(db: DatabaseSync): void {
+  efBuild(db)
 }
 
 function handleDeploy(): void {
@@ -131,7 +132,7 @@ async function main(): Promise<void> {
         await handleDot(db, rest)
         break
       case 'build':
-        handleBuild()
+        handleBuild(db)
         break
       case 'deploy':
         handleDeploy()
