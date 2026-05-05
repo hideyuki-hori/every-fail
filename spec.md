@@ -50,7 +50,7 @@ monorepo は pnpm workspace で管理する。
 
 ## フォルダ命名
 
-`yyyy-mm-dd-<title>` (`ef dot new` した日で固定、Finder 整理用ラベル)
+`yy-mm-dd-<title>` (`ef dot new` した日で固定、Finder 整理用ラベル)
 
 ## 内部構成
 

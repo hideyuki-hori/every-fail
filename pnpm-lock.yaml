@@ -69,7 +69,7 @@ importers:
         specifier: ~6.0.2
         version: 6.0.2
 
-  dots/2026-05-05-hello:
+  dots/26-05-05-hello:
     devDependencies:
       '@every-fail/dot-sdk':
         specifier: workspace:*
