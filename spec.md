@@ -131,11 +131,12 @@ type Meta = {
 ef                                    引数省略時は対話メニュー (config / dots / dot)
 ef config <key> <action> [<value>]    設定操作 (get / set / unset / list)
 ef deploy                             every.fail 自体の deploy
-ef dots                               引数省略時は対話メニュー (new / build / deploy / migrate)
+ef dots                               引数省略時は対話メニュー (build / deploy / migrate)
 ef dots build                         /dots で使用する一覧ページ、sitemap.xml を生成
 ef dots deploy
 ef dots migrate                       全 dot リポジトリに対して codemod を実行する
-ef dot new                            新規 dot を作成
+ef dot add <title>                    新規 dot を作成
+ef dot rm <folder>                    dot を削除 (フォルダ + dots テーブル)
 ef dot dev                            ブログ開発
 ef dot build                          dot フォルダの内容を build
 ef dot deploy                         dot フォルダの内容を deploy

@@ -58,10 +58,10 @@ const renderTemplate = (name: string, vars: Record<string, string>): string => {
   return raw.replace(/{{(\w+)}}/g, (_, key) => vars[key] ?? '')
 }
 
-export const dotNew = (db: DatabaseSync, args: string[]) => {
+export const dotAdd = (db: DatabaseSync, args: string[]) => {
   const rawTitle = args[0]
   if (!rawTitle) {
-    console.error('Usage: pnpm ef dot new <title>')
+    console.error('Usage: pnpm ef dot add <title>')
     process.exit(1)
   }
   const sanitized = sanitizeTitle(rawTitle)
