@@ -1,5 +1,8 @@
+import type { DatabaseSync } from 'node:sqlite'
+import { parseArgs } from 'node:util'
 import { handleConfig } from './config.ts'
 import { closeDb, getDb } from './db.ts'
+import { dotNew } from './dot-new.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
 
@@ -59,14 +62,26 @@ const pickDotsAction = () =>
     { hotkey: '3', label: 'migrate — マイグレーション実行', value: 'migrate' },
   ])
 
-const handleDot = async (args: string[]) => {
+const handleDot = async (db: DatabaseSync, args: string[]) => {
   if (args.length === 0) {
     if (!isTty()) {
       usageDot()
       process.exit(1)
     }
     const action = await pickDotAction()
+    if (action === 'new') {
+      console.error(
+        '対話メニューからの new は未対応。pnpm ef dot new <title> で実行してください'
+      )
+      process.exit(1)
+    }
     console.log(`TODO: ef dot ${action}`)
+    return
+  }
+  const [action, ...rest] = args
+  if (action === 'new') {
+    const { positionals } = parseArgs({ args: rest, allowPositionals: true })
+    dotNew(db, positionals)
     return
   }
   console.log('TODO: ef dot', args)
@@ -108,7 +123,7 @@ const main = async () => {
         handleConfig(db, rest)
         break
       case 'dot':
-        await handleDot(rest)
+        await handleDot(db, rest)
         break
       case 'dots':
         await handleDots(rest)

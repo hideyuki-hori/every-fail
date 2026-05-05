@@ -29,7 +29,7 @@ const validate = (key: string, value: string) => {
   }
 }
 
-const getValue = (db: DatabaseSync, key: string): string | null => {
+export const getValue = (db: DatabaseSync, key: string): string | null => {
   const row = db.prepare(selectSettingByKeySQL).get(key)
   if (
     row !== null &&

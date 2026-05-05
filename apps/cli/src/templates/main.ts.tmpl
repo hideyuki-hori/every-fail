@@ -1,0 +1,12 @@
+import type { DotContext, Unmount } from '@every-fail/dot-sdk'
+
+export { meta } from './meta'
+
+export const mount = (c: DotContext): Unmount => {
+  const article = document.createElement('article')
+  article.innerHTML = '<h2>{{title}}</h2>'
+  c.root.appendChild(article)
+  return () => {
+    c.root.removeChild(article)
+  }
+}
