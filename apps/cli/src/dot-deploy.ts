@@ -3,7 +3,6 @@ import { join, relative } from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
 import { detectContentType } from './cloudflare/content-type.ts'
 import { loadCredentials } from './cloudflare/credentials.ts'
-import { createKVClient } from './cloudflare/kv.ts'
 import { createR2Client } from './cloudflare/r2.ts'
 import { getValue } from './config.ts'
 import { ensureDotFolder, expandTilde } from './dot-meta.ts'
@@ -12,11 +11,10 @@ import { walkFiles } from './walk.ts'
 type DeployPlan = {
   id: string
   distDir: string
-  kvKeyIndex: string
-  kvKeyPartial: string
+  keyIndex: string
+  keyPartial: string
   assets: { local: string; key: string }[]
-  kvDeletePrefix: string
-  r2DeletePrefix: string
+  deletePrefix: string
 }
 
 function buildPlan(distDir: string, id: string): DeployPlan {
@@ -40,22 +38,19 @@ function buildPlan(distDir: string, id: string): DeployPlan {
   return {
     id,
     distDir,
-    kvKeyIndex: `dots/${id}/index.html`,
-    kvKeyPartial: `dots/${id}/partial.html`,
+    keyIndex: `dots/${id}/index.html`,
+    keyPartial: `dots/${id}/partial.html`,
     assets,
-    kvDeletePrefix: `dots/${id}/`,
-    r2DeletePrefix: `dots/${id}/`,
+    deletePrefix: `dots/${id}/`,
   }
 }
 
 function printDryRun(plan: DeployPlan): void {
   console.log(`=== dry-run (id: ${plan.id}) ===`)
   console.log('')
-  console.log(`KV: delete prefix ${plan.kvDeletePrefix} → put:`)
-  console.log(`  PUT ${plan.kvKeyIndex}`)
-  console.log(`  PUT ${plan.kvKeyPartial}`)
-  console.log('')
-  console.log(`R2: delete prefix ${plan.r2DeletePrefix} → put:`)
+  console.log(`R2: delete prefix ${plan.deletePrefix} → put:`)
+  console.log(`  PUT ${plan.keyIndex}`)
+  console.log(`  PUT ${plan.keyPartial}`)
   if (plan.assets.length === 0) {
     console.log('  (no assets)')
   } else {
@@ -69,11 +64,6 @@ function printDryRun(plan: DeployPlan): void {
 
 async function applyPlan(db: DatabaseSync, plan: DeployPlan): Promise<void> {
   const creds = loadCredentials(db)
-  const kv = createKVClient({
-    apiToken: creds.apiToken,
-    accountId: creds.accountId,
-    namespaceId: creds.kvNamespaceId,
-  })
   const r2 = createR2Client({
     accountId: creds.accountId,
     accessKeyId: creds.r2AccessKeyId,
@@ -81,31 +71,26 @@ async function applyPlan(db: DatabaseSync, plan: DeployPlan): Promise<void> {
     bucket: creds.r2Bucket,
   })
 
-  console.log(`KV: listing ${plan.kvDeletePrefix}*`)
-  const kvKeys = await kv.list(plan.kvDeletePrefix)
-  for (const k of kvKeys) {
-    console.log(`KV: DELETE ${k}`)
-    await kv.delete(k)
-  }
-  console.log(`KV: PUT ${plan.kvKeyIndex}`)
-  await kv.put(
-    plan.kvKeyIndex,
-    readFileSync(join(plan.distDir, 'index.html'), 'utf8'),
-    'text/html; charset=utf-8'
-  )
-  console.log(`KV: PUT ${plan.kvKeyPartial}`)
-  await kv.put(
-    plan.kvKeyPartial,
-    readFileSync(join(plan.distDir, 'partial.html'), 'utf8'),
-    'text/html; charset=utf-8'
-  )
-
-  console.log(`R2: listing ${plan.r2DeletePrefix}*`)
-  const r2Keys = await r2.list(plan.r2DeletePrefix)
+  console.log(`R2: listing ${plan.deletePrefix}*`)
+  const r2Keys = await r2.list(plan.deletePrefix)
   for (const k of r2Keys) {
     console.log(`R2: DELETE ${k}`)
     await r2.delete(k)
   }
+
+  console.log(`R2: PUT ${plan.keyIndex}`)
+  await r2.put(
+    plan.keyIndex,
+    readFileSync(join(plan.distDir, 'index.html')),
+    'text/html; charset=utf-8'
+  )
+  console.log(`R2: PUT ${plan.keyPartial}`)
+  await r2.put(
+    plan.keyPartial,
+    readFileSync(join(plan.distDir, 'partial.html')),
+    'text/html; charset=utf-8'
+  )
+
   for (const a of plan.assets) {
     console.log(`R2: PUT ${a.key}`)
     await r2.put(a.key, readFileSync(a.local), detectContentType(a.local))

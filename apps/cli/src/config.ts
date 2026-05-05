@@ -8,7 +8,6 @@ import upsertSettingSQL from './sql/upsert-setting.sql'
 const USER_KEYS = new Set([
   'every-fail-root-path',
   'cloudflare-account-id',
-  'cloudflare-kv-namespace-id',
   'cloudflare-r2-bucket',
 ])
 const PATH_KEYS = new Set(['every-fail-root-path'])

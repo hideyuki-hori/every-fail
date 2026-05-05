@@ -2,9 +2,7 @@ import type { DatabaseSync } from 'node:sqlite'
 import { getValue } from '../config.ts'
 
 export type CloudflareCredentials = {
-  apiToken: string
   accountId: string
-  kvNamespaceId: string
   r2Bucket: string
   r2AccessKeyId: string
   r2SecretAccessKey: string
@@ -30,11 +28,9 @@ function requireConfig(db: DatabaseSync, key: string): string {
 
 export function loadCredentials(db: DatabaseSync): CloudflareCredentials {
   return {
-    apiToken: requireEnv('EF_CLOUDFLARE_API_TOKEN'),
     r2AccessKeyId: requireEnv('EF_CLOUDFLARE_R2_ACCESS_KEY_ID'),
     r2SecretAccessKey: requireEnv('EF_CLOUDFLARE_R2_SECRET_ACCESS_KEY'),
     accountId: requireConfig(db, 'cloudflare-account-id'),
-    kvNamespaceId: requireConfig(db, 'cloudflare-kv-namespace-id'),
     r2Bucket: requireConfig(db, 'cloudflare-r2-bucket'),
   }
 }

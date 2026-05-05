@@ -79,7 +79,6 @@ function renderDotsItems(entries: DotEntry[]): string {
 function renderSitemapUrls(entries: DotEntry[]): string {
   const lines = [
     `  <url><loc>${SITE_BASE}/</loc></url>`,
-    `  <url><loc>${SITE_BASE}/about</loc></url>`,
     `  <url><loc>${SITE_BASE}/dots</loc></url>`,
   ]
   for (const e of entries) {
@@ -100,24 +99,17 @@ export function efBuild(db: DatabaseSync): void {
   }
   const expandedRoot = expandTilde(rootPath)
   const distDir = join(expandedRoot, 'dist')
-  const pagesDir = join(distDir, 'pages')
 
-  mkdirSync(join(pagesDir, 'index'), { recursive: true })
+  mkdirSync(distDir, { recursive: true })
   writeFileSync(
-    join(pagesDir, 'index', 'index.html'),
+    join(distDir, 'index.html'),
     renderTemplate('page-index.html.tmpl', {})
   )
 
-  mkdirSync(join(pagesDir, 'about'), { recursive: true })
-  writeFileSync(
-    join(pagesDir, 'about', 'index.html'),
-    renderTemplate('page-about.html.tmpl', {})
-  )
-
   const entries = listPublishedDots(expandedRoot)
-  mkdirSync(join(pagesDir, 'dots'), { recursive: true })
+  mkdirSync(join(distDir, 'dots'), { recursive: true })
   writeFileSync(
-    join(pagesDir, 'dots', 'index.html'),
+    join(distDir, 'dots', 'index.html'),
     renderTemplate('page-dots.html.tmpl', {
       items: renderDotsItems(entries),
       count: String(entries.length),
@@ -125,7 +117,7 @@ export function efBuild(db: DatabaseSync): void {
   )
 
   writeFileSync(
-    join(pagesDir, '404.html'),
+    join(distDir, '404.html'),
     renderTemplate('page-404.html.tmpl', {})
   )
 
@@ -137,9 +129,8 @@ export function efBuild(db: DatabaseSync): void {
   )
 
   console.log(`built: ${distDir}`)
-  console.log('  pages/index/index.html')
-  console.log('  pages/about/index.html')
-  console.log(`  pages/dots/index.html (${entries.length} dot(s))`)
-  console.log('  pages/404.html')
+  console.log('  index.html')
+  console.log(`  dots/index.html (${entries.length} dot(s))`)
+  console.log('  404.html')
   console.log('  sitemap.xml')
 }
