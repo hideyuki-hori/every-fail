@@ -22,20 +22,20 @@ monorepo は pnpm workspace で管理する。
   - cli: ビルドやデプロイを行うコマンド (`ef`)
   - server: 現時点では Cloudflare Worker で動くが、今後変えるかもしれない
   - web: web ブラウザで表示するもの
-  - dot-sdk: 別 repo などで使用する dot の sdk
+  - dot-sdk: 別 repo などで使用する dot の sdk (公開エンドポイント)
 - packages
+  - core: 基本ユーティリティ + pub/sub + 共通型 (最下層)
   - design: design-token (`token('key')` で色コード等を取得)
   - dom: DOM 操作の wrapper
   - router: router 機能 (web / server 両方で使う)
   - gpu: WebGPU の wrapper
-- core: 基本ユーティリティ + pub/sub + 共通型 (packages の外、独立した最下層)
 - dots: ブログ記事(別リポジトリで管理されるケースもある)
 
-依存方向: `apps → packages → core` (ディレクトリ階層と一致)
+依存方向: `apps → packages` (ディレクトリ階層と一致)。packages 内部の依存方向 (例: `dom → core`) は各 `package.json` の `dependencies` で表現する。
 
 ## packages のルール
 
-- packages 同士は依存禁止。`core` のみ依存可能。
+- 各 package の依存は `package.json` の `dependencies` で表現する
 - 公開 API は `index.ts` の export のみ。`package.json` の `exports` フィールドで強制する:
 
 ```json

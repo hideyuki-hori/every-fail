@@ -25,7 +25,7 @@ importers:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
     devDependencies:
       typescript:
         specifier: ~6.0.2
@@ -35,7 +35,7 @@ importers:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250407.0
@@ -48,7 +48,7 @@ importers:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../packages/core
       '@every-fail/dot-sdk':
         specifier: workspace:*
         version: link:../dot-sdk
@@ -63,23 +63,23 @@ importers:
         specifier: ^8.0.4
         version: 8.0.5(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0)
 
-  core:
-    devDependencies:
-      typescript:
-        specifier: ~6.0.2
-        version: 6.0.2
-
   dots/26-05-05-hello:
     devDependencies:
       '@every-fail/dot-sdk':
         specifier: workspace:*
         version: link:../../apps/dot-sdk
 
+  packages/core:
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.2
+
   packages/design:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../core
     devDependencies:
       typescript:
         specifier: ~6.0.2
@@ -89,7 +89,7 @@ importers:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../core
     devDependencies:
       typescript:
         specifier: ~6.0.2
@@ -99,7 +99,7 @@ importers:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../core
     devDependencies:
       typescript:
         specifier: ~6.0.2
@@ -109,7 +109,7 @@ importers:
     dependencies:
       '@every-fail/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../core
     devDependencies:
       typescript:
         specifier: ~6.0.2
