@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util'
 import { handleConfig } from './config.ts'
 import { closeDb, getDb } from './db.ts'
 import { dotNew } from './dot-new.ts'
+import { dotRm } from './dot-rm.ts'
 import { isTty, select } from './menu.ts'
 import { migrate } from './migrations.ts'
 
@@ -21,6 +22,7 @@ const usageDot = () => {
   console.log('')
   console.log('Actions:')
   console.log('  new — dot 新規作成')
+  console.log('  rm — dot 削除 (フォルダ + dots テーブル)')
   console.log('  dev — 開発サーバー起動')
   console.log('  build — ビルド')
   console.log('  deploy — デプロイ')
@@ -50,9 +52,10 @@ const pickTopCommand = () =>
 const pickDotAction = () =>
   select('ef dot', [
     { hotkey: '1', label: 'new — dot 新規作成', value: 'new' },
-    { hotkey: '2', label: 'dev — 開発サーバー起動', value: 'dev' },
-    { hotkey: '3', label: 'build — ビルド', value: 'build' },
-    { hotkey: '4', label: 'deploy — デプロイ', value: 'deploy' },
+    { hotkey: '2', label: 'rm — dot 削除', value: 'rm' },
+    { hotkey: '3', label: 'dev — 開発サーバー起動', value: 'dev' },
+    { hotkey: '4', label: 'build — ビルド', value: 'build' },
+    { hotkey: '5', label: 'deploy — デプロイ', value: 'deploy' },
   ])
 
 const pickDotsAction = () =>
@@ -69,9 +72,9 @@ const handleDot = async (db: DatabaseSync, args: string[]) => {
       process.exit(1)
     }
     const action = await pickDotAction()
-    if (action === 'new') {
+    if (action === 'new' || action === 'rm') {
       console.error(
-        '対話メニューからの new は未対応。pnpm ef dot new <title> で実行してください'
+        `対話メニューからの ${action} は未対応。pnpm ef dot ${action} <arg> で実行してください`
       )
       process.exit(1)
     }
@@ -82,6 +85,11 @@ const handleDot = async (db: DatabaseSync, args: string[]) => {
   if (action === 'new') {
     const { positionals } = parseArgs({ args: rest, allowPositionals: true })
     dotNew(db, positionals)
+    return
+  }
+  if (action === 'rm') {
+    const { positionals } = parseArgs({ args: rest, allowPositionals: true })
+    dotRm(db, positionals)
     return
   }
   console.log('TODO: ef dot', args)
