@@ -1,7 +1,0 @@
-name = "every-fail-server"
-main = "src/main.ts"
-compatibility_date = "2025-04-07"
-
-[assets]
-directory = "./mock"
-binding = "ASSETS"

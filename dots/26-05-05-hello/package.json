@@ -1,9 +1,0 @@
-{
-  "name": "@every-fail/dot-26-05-05-hello",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "devDependencies": {
-    "@every-fail/dot-sdk": "workspace:*"
-  }
-}
