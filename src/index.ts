@@ -14,9 +14,8 @@ export default {
 } satisfies ExportedHandler<Env>
 
 async function handleCorrect(request: Request, env: Env): Promise<Response> {
-  let body: Record<string, unknown> = {}
   try {
-    body = await request.json()
+    var body = await request.json()
   } catch {
     return new Response(null, { status: 204 })
   }
