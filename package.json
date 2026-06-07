@@ -1,0 +1,15 @@
+{
+  "name": "every-fail",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.ts",
+    "dev": "node build.ts && wrangler dev",
+    "deploy": "node build.ts && wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260607.1",
+    "wrangler": "4.98.0"
+  }
+}

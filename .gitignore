@@ -26,3 +26,18 @@ dist-ssr
 # Cloudflare
 
 .wrangler/
+.dev.vars
+
+# build 成果物（root のソースから生成）
+dist/
+
+# 素材は Git に含めない（R2 / assets.every.fail から配信する）
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.avif
+*.mp4
+*.webm
+*.woff2
